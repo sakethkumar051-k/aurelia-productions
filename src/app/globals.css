@@ -1,0 +1,508 @@
+/* ==========================================================================
+   The Aurevia Productions — design tokens and shared primitives
+   Values are taken verbatim from the design handoff prototype.
+   ========================================================================== */
+
+:root {
+  /* Colour */
+  --maroon-deepest: #4a1010;
+  --maroon: #5c1616;
+  --maroon-mid: #7a1f1f;
+  --ink: #3b1512;
+  --gold: #c9a44c;
+  --gold-light: #e3c77b;
+  --gold-deep: #8a6820; /* eyebrows and micro-labels on light grounds */
+  --gold-script: #9a7526; /* hero display italic */
+  --ivory: #faf0e4;
+  --ivory-card: #fdf7ef;
+  --sand: #f2dcc8;
+
+  /* Gradients */
+  --band-ivory-card: linear-gradient(180deg, #faf0e4 0%, #fdf7ef 100%);
+  --band-card-sand: linear-gradient(180deg, #fdf7ef 0%, #f2dcc8 100%);
+  --band-ivory-sand: linear-gradient(180deg, #faf0e4 0%, #f2dcc8 100%);
+
+  /* Shape */
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --radius-card-xl: 20px;
+  --radius-card-sm: 14px;
+  --radius-pill: 999px;
+  --radius-input: 6px;
+
+  /* Elevation */
+  --shadow-rest: 0 12px 34px rgba(92, 22, 22, 0.06);
+  --shadow-hover: 0 26px 60px rgba(92, 22, 22, 0.16);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Layout */
+  --gutter: 32px;
+  --header-height: 92px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: var(--font-ui), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--maroon-mid);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gold);
+}
+
+button {
+  font-family: inherit;
+}
+
+img,
+svg {
+  display: block;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+figure,
+blockquote {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------------------------- */
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes glowpulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes routeFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll reveal
+   The `data-fx` flag is set on <html> by an inline script before first paint,
+   so content is never hidden when JS is unavailable or motion is reduced.
+   -------------------------------------------------------------------------- */
+
+html[data-fx='on'] [data-reveal] {
+  transition:
+    opacity 0.95s var(--ease-out-soft),
+    transform 1.05s var(--ease-out-soft);
+  will-change: opacity, transform;
+}
+
+html[data-fx='on'] [data-reveal]:not([data-shown]) {
+  opacity: 0;
+}
+
+html[data-fx='on'] [data-reveal='y']:not([data-shown]) {
+  transform: translateY(30px);
+}
+
+html[data-fx='on'] [data-reveal='x']:not([data-shown]) {
+  transform: scaleX(0);
+}
+
+html[data-fx='on'] [data-reveal='zoom']:not([data-shown]) {
+  transform: scale(0.94);
+}
+
+html[data-fx='on'] [data-reveal][data-shown] {
+  opacity: 1;
+  transform: none;
+}
+
+.originLeft {
+  transform-origin: left;
+}
+
+.originRight {
+  transform-origin: right;
+}
+
+/* --------------------------------------------------------------------------
+   Layout primitives
+   -------------------------------------------------------------------------- */
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.containerNarrow {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.containerProse {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 300;
+  padding: 14px 22px;
+  background: var(--maroon);
+  color: var(--gold-light);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.skipLink:focus {
+  left: 16px;
+  top: 16px;
+  color: var(--gold-light);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Type primitives
+   -------------------------------------------------------------------------- */
+
+.eyebrow {
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.eyebrowGold {
+  color: var(--gold-deep);
+}
+
+.microLabel {
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.display {
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.em {
+  font-style: italic;
+  color: var(--maroon-mid);
+}
+
+.script {
+  font-family: var(--font-script), cursive;
+  color: var(--maroon-mid);
+}
+
+.lede {
+  font-size: 16px;
+  line-height: 1.85;
+  font-weight: 300;
+  color: rgba(59, 21, 18, 0.8);
+  text-wrap: pretty;
+}
+
+/* Page hero shared by About / Services / Portfolio / Contact */
+
+.pageHero {
+  position: relative;
+  background: var(--ivory);
+  overflow: hidden;
+}
+
+.pageHeroTitle {
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(42px, 6.2vw, 86px);
+  line-height: 1;
+  color: var(--maroon);
+}
+
+/* Section heading rule with the lotus glyph */
+
+.lotusDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.lotusDivider span {
+  display: block;
+  height: 1px;
+  width: 110px;
+}
+
+.lotusRuleLeft {
+  background: linear-gradient(90deg, rgba(201, 164, 76, 0), var(--gold));
+  transform-origin: right;
+}
+
+.lotusRuleRight {
+  background: linear-gradient(90deg, var(--gold), rgba(201, 164, 76, 0));
+  transform-origin: left;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-block;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+  text-align: center;
+  transition:
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+.btnLg {
+  padding: 17px 34px;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+}
+
+.btnMd {
+  padding: 16px 32px;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+}
+
+.btnSm {
+  padding: 15px 30px;
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+}
+
+.btnXs {
+  padding: 14px 26px;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+}
+
+.btnGold {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+.btnGold:hover {
+  background: var(--gold-light);
+  color: var(--ink);
+  box-shadow: 0 14px 40px rgba(201, 164, 76, 0.34);
+}
+
+.btnGoldLift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(201, 164, 76, 0.32);
+}
+
+.btnGhost {
+  background: transparent;
+  color: var(--maroon-mid);
+  border-color: rgba(122, 31, 31, 0.45);
+}
+
+.btnGhost:hover {
+  background: rgba(122, 31, 31, 0.07);
+  border-color: var(--maroon-mid);
+  color: var(--maroon-mid);
+}
+
+.btnGhostFill {
+  background: transparent;
+  color: var(--maroon-mid);
+  border-color: rgba(122, 31, 31, 0.5);
+}
+
+.btnGhostFill:hover {
+  background: var(--maroon);
+  color: var(--gold-light);
+  border-color: var(--maroon);
+}
+
+.btnMaroon {
+  background: var(--maroon);
+  color: var(--gold-light);
+  border-color: var(--maroon);
+}
+
+.btnMaroon:hover {
+  background: var(--maroon-mid);
+  color: var(--gold-light);
+  box-shadow: 0 14px 40px rgba(92, 22, 22, 0.28);
+}
+
+.btnOutlineGold {
+  background: transparent;
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.btnOutlineGold:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Small shared marks
+   -------------------------------------------------------------------------- */
+
+.diamond {
+  display: block;
+  flex: none;
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+.hairline {
+  display: block;
+  height: 1px;
+  background: rgba(201, 164, 76, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Small screens — the design has no breakpoints, so only the gutter and the
+   heaviest paddings relax. Every grid is already auto-fit/minmax.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  :root {
+    --gutter: 22px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — everything renders at rest
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

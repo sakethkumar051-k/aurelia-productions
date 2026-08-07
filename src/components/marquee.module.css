@@ -1,0 +1,30 @@
+.strip {
+  background: var(--maroon);
+  border-bottom: 1px solid rgba(201, 164, 76, 0.3);
+  overflow: hidden;
+  padding: 15px 0;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: marquee 34s linear infinite;
+}
+
+.run {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  padding-right: 34px;
+}
+
+.word {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(250, 240, 228, 0.72);
+  white-space: nowrap;
+}

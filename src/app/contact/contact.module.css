@@ -1,0 +1,232 @@
+.hero {
+  position: relative;
+  padding: 186px 0 92px;
+  background: var(--ivory);
+  overflow: hidden;
+}
+
+.heroEyebrow {
+  margin-bottom: 20px;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.heroTitle {
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(42px, 6.2vw, 86px);
+  line-height: 1;
+  color: var(--maroon);
+}
+
+.heroScript {
+  margin-top: 24px;
+  font-family: var(--font-script), cursive;
+  font-size: 32px;
+  color: var(--maroon-mid);
+}
+
+/* Enquiry ----------------------------------------------------------------- */
+
+.enquiry {
+  padding: 88px 0 104px;
+  background: var(--ivory);
+}
+
+.grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 48px;
+  align-items: start;
+}
+
+.formCard {
+  padding: 44px 38px;
+  background: var(--ivory-card);
+  border: 1px solid rgba(201, 164, 76, 0.5);
+  border-radius: var(--radius-card-xl);
+  box-shadow: 0 18px 46px rgba(92, 22, 22, 0.08);
+}
+
+@media (max-width: 560px) {
+  .formCard {
+    padding: 34px 24px;
+  }
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* WhatsApp / DM card ------------------------------------------------------ */
+
+.reachCard {
+  padding: 34px 30px;
+  background: var(--maroon);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-card-lg);
+  color: var(--ivory);
+}
+
+.reachEyebrow {
+  margin-bottom: 16px;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.reachTitle {
+  margin-bottom: 10px;
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  font-size: 27px;
+}
+
+.reachBody {
+  margin-bottom: 24px;
+  font-size: 14.5px;
+  line-height: 1.8;
+  font-weight: 300;
+  color: rgba(250, 240, 228, 0.8);
+}
+
+.reachActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.reachPrimary {
+  padding: 14px 24px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.reachPrimary:hover {
+  background: var(--gold-light);
+  color: var(--ink);
+}
+
+.reachSecondary {
+  padding: 14px 24px;
+  border: 1px solid rgba(201, 164, 76, 0.6);
+  color: var(--gold-light);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.reachSecondary:hover {
+  background: rgba(201, 164, 76, 0.14);
+  color: var(--gold-light);
+}
+
+/* Studio card ------------------------------------------------------------- */
+
+.studioCard {
+  padding: 32px 30px;
+  background: var(--ivory-card);
+  border: 1px solid rgba(201, 164, 76, 0.5);
+  border-radius: var(--radius-card-lg);
+}
+
+.studioLabel {
+  margin-bottom: 18px;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.studioLine {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.studioHours {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(59, 21, 18, 0.66);
+}
+
+.studioLink {
+  color: var(--ink);
+  border-bottom: 1px solid rgba(201, 164, 76, 0.55);
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.studioLink:hover {
+  color: var(--maroon-mid);
+  border-color: var(--maroon-mid);
+}
+
+/* Map --------------------------------------------------------------------- */
+
+.map {
+  position: relative;
+  height: 250px;
+  border: 1px solid rgba(201, 164, 76, 0.5);
+  border-radius: var(--radius-card-lg);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(201, 164, 76, 0.16) 0 1px,
+      transparent 1px 46px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(201, 164, 76, 0.16) 0 1px,
+      transparent 1px 46px
+    ),
+    var(--sand);
+}
+
+.mapPin {
+  position: absolute;
+  top: 44%;
+  left: 38%;
+  width: 14px;
+  height: 14px;
+  background: var(--maroon-mid);
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+}
+
+.mapPin::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border: 1px solid rgba(122, 31, 31, 0.35);
+  border-radius: 50%;
+  animation: glowpulse 9s ease-in-out infinite;
+}
+
+.mapCaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 16px 20px;
+  background: rgba(253, 247, 239, 0.92);
+  border-top: 1px solid rgba(201, 164, 76, 0.4);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}

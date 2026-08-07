@@ -1,0 +1,146 @@
+.footer {
+  background: var(--maroon-deepest);
+  color: rgba(250, 240, 228, 0.78);
+  border-top: 1px solid rgba(201, 164, 76, 0.4);
+}
+
+/* Trust strip ------------------------------------------------------------ */
+
+.strip {
+  border-bottom: 1px solid rgba(201, 164, 76, 0.25);
+}
+
+.stripInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px 34px;
+}
+
+.stripItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+/* Columns ---------------------------------------------------------------- */
+
+.columns {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px var(--gutter) 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 44px;
+}
+
+.brandName {
+  font-family: var(--font-display), serif;
+  font-size: 22px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ivory);
+}
+
+.brandSub {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.brandScript {
+  margin-top: 22px;
+  font-family: var(--font-script), cursive;
+  font-size: 26px;
+  color: var(--gold-light);
+}
+
+.brandBlurb {
+  margin-top: 16px;
+  max-width: 270px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.colLabel {
+  margin-bottom: 20px;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.colList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.colLink {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: rgba(250, 240, 228, 0.78);
+  transition: color 0.3s ease;
+}
+
+.colLink:hover {
+  color: var(--gold-light);
+}
+
+.contactLine {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.contactLineLast {
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.footerCta {
+  display: inline-block;
+  padding: 14px 26px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: background 0.35s ease;
+}
+
+.footerCta:hover {
+  background: var(--gold-light);
+  color: var(--ink);
+}
+
+/* Legal bar -------------------------------------------------------------- */
+
+.legal {
+  border-top: 1px solid rgba(201, 164, 76, 0.25);
+}
+
+.legalInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11.5px;
+  font-weight: 300;
+  color: rgba(250, 240, 228, 0.55);
+}

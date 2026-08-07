@@ -1,0 +1,278 @@
+.hero {
+  position: relative;
+  padding: 190px 0 110px;
+  background: var(--ivory);
+  overflow: hidden;
+}
+
+.heroEyebrow {
+  margin-bottom: 20px;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.heroTitle {
+  max-width: 900px;
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(42px, 6.4vw, 88px);
+  line-height: 1;
+  color: var(--maroon);
+}
+
+.heroScript {
+  margin-top: 24px;
+  font-family: var(--font-script), cursive;
+  font-size: 34px;
+  color: var(--maroon-mid);
+}
+
+/* Story ------------------------------------------------------------------ */
+
+.story {
+  padding: 104px 0;
+  background: var(--ivory);
+}
+
+.storyGrid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 60px;
+  align-items: center;
+}
+
+.storyEyebrow {
+  margin-bottom: 18px;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.storyTitle {
+  margin-bottom: 26px;
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+.storyBody {
+  margin-bottom: 18px;
+  font-size: 16px;
+  line-height: 1.9;
+  font-weight: 300;
+  color: rgba(59, 21, 18, 0.82);
+  text-wrap: pretty;
+}
+
+.storyBody:last-child {
+  margin-bottom: 0;
+}
+
+.storyFigure {
+  position: relative;
+  border: 1px solid rgba(201, 164, 76, 0.5);
+  border-radius: var(--radius-card-lg);
+  overflow: hidden;
+  box-shadow: 0 26px 60px rgba(92, 22, 22, 0.14);
+  background: var(--sand);
+}
+
+.storyFrame {
+  position: relative;
+  height: 520px;
+}
+
+/* Philosophy -------------------------------------------------------------- */
+
+.philosophy {
+  padding: 96px 0;
+  background: var(--sand);
+}
+
+.philosophyInner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  text-align: center;
+}
+
+.philosophyEyebrow {
+  margin-bottom: 18px;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.philosophyQuote {
+  margin: 0 auto;
+  max-width: 900px;
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(28px, 3.6vw, 46px);
+  line-height: 1.4;
+  color: var(--maroon);
+  text-wrap: pretty;
+}
+
+.philosophyDivider {
+  margin-top: 34px;
+}
+
+/* Process ----------------------------------------------------------------- */
+
+.process {
+  padding: 104px 0;
+  background: var(--ivory-card);
+}
+
+.processEyebrow {
+  margin-bottom: 16px;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.processTitle {
+  margin-bottom: 58px;
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(32px, 4vw, 54px);
+  color: var(--ink);
+}
+
+.processGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  border-top: 1px solid rgba(201, 164, 76, 0.5);
+}
+
+.processStep {
+  position: relative;
+  padding: 38px 28px 42px;
+  border-right: 1px solid rgba(201, 164, 76, 0.35);
+}
+
+.processNode {
+  position: absolute;
+  top: -7px;
+  left: 28px;
+  width: 13px;
+  height: 13px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+.processNumber {
+  margin-bottom: 14px;
+  font-family: var(--font-display), serif;
+  font-size: 44px;
+  line-height: 1;
+  color: rgba(122, 31, 31, 0.28);
+}
+
+.processStepTitle {
+  margin-bottom: 12px;
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--ink);
+}
+
+.processStepBody {
+  font-size: 14px;
+  line-height: 1.8;
+  font-weight: 300;
+  color: rgba(59, 21, 18, 0.75);
+  text-wrap: pretty;
+}
+
+/* Team -------------------------------------------------------------------- */
+
+.team {
+  padding: 104px 0;
+  background: var(--band-card-sand);
+}
+
+.teamEyebrow {
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 10.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.teamTitle {
+  margin-bottom: 56px;
+  text-align: center;
+  font-family: var(--font-display), serif;
+  font-weight: 300;
+  font-size: clamp(32px, 4vw, 54px);
+  color: var(--ink);
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 26px;
+}
+
+.teamCard {
+  background: var(--ivory-card);
+  border: 1px solid rgba(201, 164, 76, 0.45);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(92, 22, 22, 0.08);
+  transition:
+    transform 0.5s var(--ease-out-soft),
+    box-shadow 0.5s ease,
+    border-color 0.5s ease;
+}
+
+.teamCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-light);
+  box-shadow: 0 24px 54px rgba(92, 22, 22, 0.16);
+}
+
+.teamFrame {
+  position: relative;
+  height: 290px;
+  background: var(--sand);
+}
+
+.teamCaption {
+  padding: 24px 22px 26px;
+  border-top: 1px solid rgba(201, 164, 76, 0.3);
+}
+
+.teamName {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.teamRole {
+  margin-top: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--maroon-mid);
+}
+
+.teamCta {
+  margin-top: 64px;
+  text-align: center;
+}
