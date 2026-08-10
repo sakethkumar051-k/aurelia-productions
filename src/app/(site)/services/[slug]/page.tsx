@@ -2,19 +2,24 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { Emphasis, fill } from '@/components/emphasis';
 import { FaqAccordion } from '@/components/faq-accordion';
 import { CheckMark } from '@/components/lotus-divider';
 import { Photo } from '@/components/photo';
-import { SERVICES, getService, otherServices } from '@/content/services';
-import { SITE } from '@/content/site';
+import { defaultContent } from '@/content/defaults';
+import { getContent, getService, otherServices } from '@/lib/content';
 import { siteUrl } from '@/lib/site-url';
 
 import styles from './service.module.css';
 
 type Params = { slug: string };
 
+/**
+ * Prerender the pillars that ship with the design. A pillar added later in the
+ * admin panel still renders — it is served on demand and cached from then on.
+ */
 export function generateStaticParams(): Params[] {
-  return SERVICES.map((service) => ({ slug: service.slug }));
+  return defaultContent.services.map((service) => ({ slug: service.slug }));
 }
 
 export async function generateMetadata({
@@ -23,7 +28,8 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getService(slug);
+  const content = await getContent();
+  const service = getService(content, slug);
 
   if (!service) return {};
 
@@ -32,7 +38,7 @@ export async function generateMetadata({
     description: service.blurb,
     alternates: { canonical: `/services/${service.slug}` },
     openGraph: {
-      title: `${service.title} · ${SITE.shortName}`,
+      title: `${service.title} · ${content.brand.shortName}`,
       description: service.blurb,
       url: `/services/${service.slug}`,
     },
@@ -45,11 +51,13 @@ export default async function ServiceDetailPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const service = getService(slug);
+  const content = await getContent();
+  const service = getService(content, slug);
 
   if (!service) notFound();
 
-  const siblings = otherServices(service.slug);
+  const { serviceDetail, media, brand } = content;
+  const siblings = otherServices(content, service.slug);
 
   const schema = {
     '@context': 'https://schema.org',
@@ -60,7 +68,7 @@ export default async function ServiceDetailPage({
         description: service.blurb,
         serviceType: service.items,
         url: `${siteUrl()}/services/${service.slug}`,
-        provider: { '@type': 'LocalBusiness', name: SITE.name },
+        provider: { '@type': 'LocalBusiness', name: brand.name },
         areaServed: { '@type': 'Country', name: 'India' },
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
@@ -94,6 +102,7 @@ export default async function ServiceDetailPage({
         <div className={styles.heroPhoto}>
           <Photo
             slot={`svc-hero-${service.slug}`}
+            asset={media[`svc-hero-${service.slug}`]}
             alt={service.hero}
             sizes="100vw"
             priority
@@ -103,7 +112,7 @@ export default async function ServiceDetailPage({
 
         <div data-stagger className={styles.heroInner}>
           <p data-reveal="y" className={styles.heroEyebrow}>
-            {service.eyebrow} · Services
+            {service.eyebrow} · {serviceDetail.eyebrowSuffix}
           </p>
           <h1 id="dt-h" data-reveal="y" className={styles.heroTitle}>
             {service.title}
@@ -116,10 +125,10 @@ export default async function ServiceDetailPage({
           </p>
           <div data-reveal="y" className={styles.heroActions}>
             <Link href="/contact" className="btn btnMd btnGold">
-              Get a Custom Quote
+              {serviceDetail.heroCta.primary}
             </Link>
             <Link href="/services" className="btn btnMd btnGhost">
-              All Services
+              {serviceDetail.heroCta.secondary}
             </Link>
           </div>
         </div>
@@ -129,10 +138,10 @@ export default async function ServiceDetailPage({
         <div className={styles.includesGrid}>
           <div>
             <p data-reveal="y" className={styles.includesEyebrow}>
-              What&rsquo;s included
+              {serviceDetail.includes.eyebrow}
             </p>
             <h2 id="inc-h" data-reveal="y" className={styles.includesTitle}>
-              Handled <span className="em">end to end</span>
+              <Emphasis text={serviceDetail.includes.title} />
             </h2>
             <ul data-reveal="y" className={styles.includesChips}>
               {service.items.map((item) => (
@@ -140,8 +149,7 @@ export default async function ServiceDetailPage({
               ))}
             </ul>
             <p data-reveal="y" className={styles.includesNote}>
-              Every line below is quoted openly. Remove what you don&rsquo;t
-              need — the plan flexes, the standard doesn&rsquo;t.
+              {serviceDetail.includes.note}
             </p>
           </div>
 
@@ -159,14 +167,13 @@ export default async function ServiceDetailPage({
       <section aria-labelledby="pk-h" className={styles.packages}>
         <div className="container">
           <p data-reveal="y" className={styles.packagesEyebrow}>
-            Packages
+            {serviceDetail.packages.eyebrow}
           </p>
           <h2 id="pk-h" data-reveal="y" className={styles.packagesTitle}>
-            Normal · Premium · <span className="em">Bespoke</span>
+            <Emphasis text={serviceDetail.packages.title} />
           </h2>
           <p data-reveal="y" className={styles.packagesNote}>
-            Tiers are a starting shape, not a cage. Final costing follows your
-            guest count, city and dates.
+            {serviceDetail.packages.note}
           </p>
 
           <div data-stagger className={styles.packageGrid}>
@@ -183,7 +190,11 @@ export default async function ServiceDetailPage({
                       : styles.packageCard
                   }
                 >
-                  {featured && <span className={styles.ribbon}>Most chosen</span>}
+                  {featured && (
+                    <span className={styles.ribbon}>
+                      {serviceDetail.packages.ribbon}
+                    </span>
+                  )}
                   <p className={styles.packageTier}>{pkg.tier}</p>
                   <p className={styles.packageBest}>{pkg.best}</p>
                   <span aria-hidden="true" className="hairline" />
@@ -199,7 +210,7 @@ export default async function ServiceDetailPage({
                     href="/contact"
                     className={`btn btnOutlineGold ${styles.packageCta}`}
                   >
-                    Enquire · {pkg.tier}
+                    {fill(serviceDetail.packages.cta, { tier: pkg.tier })}
                   </Link>
                 </article>
               );
@@ -211,10 +222,10 @@ export default async function ServiceDetailPage({
       <section aria-labelledby="gal-h" className={styles.gallery}>
         <div className="container">
           <p data-reveal="y" className={styles.galleryEyebrow}>
-            Gallery
+            {serviceDetail.gallery.eyebrow}
           </p>
           <h2 id="gal-h" data-reveal="y" className={styles.galleryTitle}>
-            From recent <span className="em">projects</span>
+            <Emphasis text={serviceDetail.gallery.title} />
           </h2>
 
           <div data-stagger className={styles.galleryGrid}>
@@ -227,6 +238,7 @@ export default async function ServiceDetailPage({
                 <div className={styles.galleryFrame}>
                   <Photo
                     slot={`svc-${service.slug}-${index}`}
+                    asset={media[`svc-${service.slug}-${index}`]}
                     alt={caption}
                     sizes="(max-width: 700px) 100vw, 25vw"
                   />
@@ -240,27 +252,26 @@ export default async function ServiceDetailPage({
       <section aria-labelledby="faq-h" className={styles.faq}>
         <div className="containerProse">
           <p data-reveal="y" className={styles.faqEyebrow}>
-            Questions
+            {serviceDetail.faq.eyebrow}
           </p>
           <h2 id="faq-h" data-reveal="y" className={styles.faqTitle}>
-            Before you <span className="em">enquire</span>
+            <Emphasis text={serviceDetail.faq.title} />
           </h2>
 
           <FaqAccordion slug={service.slug} faqs={service.faqs} />
 
           <div data-reveal="y" className={styles.closingCard}>
-            <p className={styles.closingScript}>Shall we begin?</p>
-            <p className={styles.closingBody}>
-              Send us the date and city. A costed plan and a mood board come back
-              within 48 hours.
+            <p className={styles.closingScript}>
+              {serviceDetail.closing.script}
             </p>
+            <p className={styles.closingBody}>{serviceDetail.closing.body}</p>
             <Link href="/contact" className="btn btnMd btnGold">
-              DM for Booking
+              {serviceDetail.closing.cta}
             </Link>
           </div>
 
           <div data-reveal="y" className={styles.others}>
-            <p className={styles.othersLabel}>Other pillars</p>
+            <p className={styles.othersLabel}>{serviceDetail.othersLabel}</p>
             <div className={styles.othersRow}>
               {siblings.map((sibling) => (
                 <Link

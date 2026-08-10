@@ -8,7 +8,11 @@ prototype at high fidelity.
 
 | Layer | Choice | Why |
 | --- | --- | --- |
-| Framework | **Next.js 16, App Router, TypeScript** | Seven real routes including `/services/[slug]`, static prerendering for every page, and route handlers ready for the enquiry backend and the admin/photo layer that comes next. |
+| Framework | **Next.js 16, App Router, TypeScript** | Seven real routes including `/services/[slug]`, static prerendering for every page, and route handlers for the enquiry endpoint and admin session. |
+| Content | **Firestore**, deep-merged onto bundled defaults | The client edits copy in `/admin`; the site still renders without Firebase, so a fresh clone, CI and previews all work with no credentials. |
+| Caching | **Cache Components** (`use cache` + `updateTag`) | Marketing pages stay static HTML; an admin save expires the content tag so the change is live on the next request, with no stale window and no redeploy. |
+| Admin auth | **Firebase Auth** → httpOnly session cookie | Browser credentials never leave the login screen; every admin page and action re-verifies the cookie server-side against an email allowlist. |
+| Photography | **Cloudinary**, signed direct uploads | Image bytes never pass through this app, and `f_auto,q_auto` delivers AVIF/WebP per browser off Cloudinary's CDN. |
 | Styling | **CSS Modules + a token layer** (`src/app/globals.css`) | The handoff specifies exact hex, px and easing values. Tokens plus scoped modules reproduce them verbatim and keep each section readable, without arbitrary-value soup. |
 | Fonts | **`next/font/google`** — Cormorant Garamond, Great Vibes, Jost | Self-hosted and preloaded at build time, so no render-blocking request to Google and no layout shift. |
 | Images | **`next/image`** behind a `Photo` slot component | Every photo position is addressed by a stable slot id; unfilled slots render an art-directed placeholder carrying the shot brief. |
@@ -31,22 +35,33 @@ npm run lint
 | `/festive-decor` | Ganeshotsav / festive decor |
 | `/portfolio` | Portfolio grid + lightbox |
 | `/contact` | Contact + enquiry form |
-| `/api/enquiry` | Enquiry endpoint (see *Backend seams*) |
+| `/api/enquiry` | Enquiry endpoint — archives to Firestore |
+| `/admin` | Admin panel (Firebase Auth, `noindex`) |
 
 ## Structure
 
 ```
 src/
-  app/                  routes, per-page CSS modules, sitemap, robots, icon
-    api/enquiry/        enquiry route handler
-  components/           header, footer, photo, scroll choreography, gallery, form, FAQ
-  content/              all copy and data — services, portfolio, site, images
-  lib/                  site URL helper
-public/images/          photography
+  app/
+    (site)/             the public site — one folder per route, with its CSS module
+    admin/              the admin panel (its own chrome, no site header/footer)
+    api/                enquiry endpoint, admin session exchange
+    layout.tsx          html/body/fonts only
+  components/
+    admin/              nav, generic content editor, media manager, login
+    …                   header, footer, photo, scroll choreography, gallery, form, FAQ
+  content/
+    schema.ts           the editable content tree (zod) — the single source of shape
+    defaults.ts         the shipped copy, used as fallback and as "reset"
+    sections.ts         admin navigation metadata
+  lib/
+    content.ts          Firestore read + deep merge + `use cache`
+    auth.ts             session verification and the admin allowlist
+    firebase/           Admin SDK (server) and client SDK (login only)
+    cloudinary*.ts      URL loader and upload signing
+  proxy.ts              optimistic admin guard (Next 16 renamed middleware → proxy)
+public/images/          photography committed to the repo
 ```
-
-All copy and content data lives in `src/content/`, lifted verbatim from the prototype's
-logic class. Moving it to a CMS later means replacing those modules, not the views.
 
 ## Interaction notes
 
@@ -100,26 +115,64 @@ Six small corrections, all to defects that would ship as bugs:
 - **Route fade** — 260ms cross-fade on navigation, matching the prototype's transition.
 - **Brand favicon**, mailto/tel links, `noopener` on outbound links, and a small-screen gutter.
 
-## Backend seams (for the admin + photo work next)
+## The admin panel
 
-Nothing here presumes a particular backend — three files are the seams:
+`/admin`, signed in with Firebase Auth. It edits **579 fields** across twelve sections —
+every heading, eyebrow, button label, list item, package bullet and FAQ on the site.
 
-1. **`src/content/images.ts`** — the slot → asset register. Swap the static imports for records
-   from the media library, keeping the slot keys, and every photo position across the site fills
-   in at once. Slot ids are documented in that file.
-2. **`src/app/api/enquiry/route.ts`** — validates, throttles and currently logs the enquiry. The
-   `TODO(backend)` marks where delivery goes: transactional email, a row in the admin database,
-   a WhatsApp/CRM notification. The in-memory rate limiter needs a shared store once deployed to
-   more than one instance.
-3. **`src/content/*.ts`** — services, portfolio and site data. These become CMS reads when the
-   admin can edit them.
+**How content flows.** Firestore holds *partial overrides* of the tree in `content/<section>`
+documents, deep-merged onto `src/content/defaults.ts` at read time. Consequences worth knowing:
+
+- An empty database renders the original design. Firebase being down renders the original
+  design. Neither is an outage.
+- A save writes only the section that changed.
+- Adding a field to `schema.ts` later cannot break content already saved — the default fills in.
+- Every save is validated against the section's zod schema *before* it reaches Firestore, so the
+  live site can never be handed a shape it cannot render.
+
+**The editor is generic.** Inputs are chosen from the *shape* of the data — strings become text
+inputs or textareas, arrays become reorderable lists with add/remove, objects become fieldsets.
+Add a field to `schema.ts` and `defaults.ts` and it appears in the panel automatically; there is
+no per-field form to maintain.
+
+Two conventions an editor should know, both surfaced as hints in the panel:
+
+- Section headings use `*asterisks*` for the italic gold emphasis — `Five pillars, one *atelier*`.
+- Button labels use `{tier}` and `{name}` placeholders — `Enquire · {tier}`.
+
+**Photographs.** `/admin/media` lists all 52 photo frames on the site, derived from the content
+tree, each showing its art-direction brief. Uploads are signed server-side and go straight from
+the browser to Cloudinary; only the public id and dimensions come back to Firestore. Frames with
+no photograph render the placeholder carrying the brief.
+
+**Enquiries.** Every submission is written to Firestore first — the inbox at `/admin/enquiries`
+is the durable record — and email delivery is layered on top, so a mail provider outage can
+never lose an enquiry.
+
+## Setup
+
+1. **Firebase.** Create a project. Enable **Firestore** and **Authentication → Email/Password**.
+   Add a user for each person who will edit the site. Generate a service account key
+   (Project settings → Service accounts).
+2. **Cloudinary.** Create an account; copy the cloud name, API key and secret.
+3. **Environment.** `cp .env.example .env.local` and fill it in. `ADMIN_EMAILS` decides who may
+   sign in — leave it empty and nobody can, which is the safe default.
+4. **Firestore rules.** Deploy `firestore.rules`. It denies all browser access, which is correct:
+   the site reads Firestore server-side through the Admin SDK, never from a browser.
+
+Firestore and Auth stay within the free Spark plan at this site's volume. Cloudinary's free tier
+covers the photography. Nothing here needs a billing account.
 
 ## Still open
 
-- **Photography** — 35 slots, one filled (`about-story`, carried over from the handoff). Each
-  placeholder shows its art-direction brief.
+- **Photography** — 52 frames, one filled (`about-story`, carried over from the handoff). Upload
+  the rest through `/admin/media`; each placeholder shows its art-direction brief.
+- **Email delivery** — the enquiry endpoint archives to Firestore and marks a `TODO(email)` where
+  the provider call goes. Pending the choice of Resend or SMTP.
 - **Contact details are placeholders** — `hello@aurevia.in`, `+91 90000 00000`,
   `wa.me/919000000000`, and the Instagram URL. Confirm with the client.
 - **Map** — still the designed CSS placeholder; needs a real embed for Baner, Pune.
+- **Rate limiting** — the enquiry throttle is per-instance and resets on cold start. Fine for one
+  server; needs a shared store if the site is ever deployed to several regions.
 - **`NEXT_PUBLIC_SITE_URL`** — set per environment so canonicals, Open Graph and the sitemap
   point at the real domain (falls back to `https://aurevia.in`).

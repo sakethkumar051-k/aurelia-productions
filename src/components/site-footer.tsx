@@ -1,15 +1,18 @@
 import Link from 'next/link';
 
-import { FOOTER_SERVICES, NAV, SITE, TRUST_STRIP } from '@/content/site';
+import type { Content } from '@/content/schema';
+import { NAV } from '@/content/site';
 
 import styles from './site-footer.module.css';
 
-export function SiteFooter() {
+export function SiteFooter({ content }: { content: Content }) {
+  const { footer, contact, services } = content;
+
   return (
     <footer className={styles.footer}>
       <div className={styles.strip}>
         <div className={styles.stripInner}>
-          {TRUST_STRIP.map((item) => (
+          {footer.trustStrip.map((item) => (
             <span key={item} className={styles.stripItem}>
               {item}
               <span aria-hidden="true" className="diamond" />
@@ -22,15 +25,12 @@ export function SiteFooter() {
         <div>
           <p className={styles.brandName}>Aurevia</p>
           <p className={styles.brandSub}>Productions</p>
-          <p className={styles.brandScript}>Moments that last</p>
-          <p className={styles.brandBlurb}>
-            Events, decor and production — pan India, from intimate ceremonies to
-            city-scale festivals.
-          </p>
+          <p className={styles.brandScript}>{footer.script}</p>
+          <p className={styles.brandBlurb}>{footer.blurb}</p>
         </div>
 
         <div>
-          <p className={styles.colLabel}>Pages</p>
+          <p className={styles.colLabel}>{footer.pagesLabel}</p>
           <ul className={styles.colList}>
             {NAV.map((item) => (
               <li key={item.href}>
@@ -43,11 +43,14 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <p className={styles.colLabel}>Services</p>
+          <p className={styles.colLabel}>{footer.servicesLabel}</p>
           <ul className={styles.colList}>
-            {FOOTER_SERVICES.map((service) => (
-              <li key={service.href}>
-                <Link href={service.href} className={styles.colLink}>
+            {services.map((service) => (
+              <li key={service.slug}>
+                <Link
+                  href={`/services/${service.slug}`}
+                  className={styles.colLink}
+                >
                   {service.title}
                 </Link>
               </li>
@@ -56,28 +59,28 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <p className={styles.colLabel}>Enquiries</p>
+          <p className={styles.colLabel}>{footer.enquiriesLabel}</p>
           <p className={styles.contactLine}>
-            <a href={`mailto:${SITE.email}`} className={styles.colLink}>
-              {SITE.email}
+            <a href={`mailto:${contact.email}`} className={styles.colLink}>
+              {contact.email}
             </a>
           </p>
           <p className={styles.contactLine}>
-            <a href={`tel:${SITE.phoneHref}`} className={styles.colLink}>
-              {SITE.phone}
+            <a href={`tel:${contact.phoneHref}`} className={styles.colLink}>
+              {contact.phone}
             </a>
           </p>
-          <p className={styles.contactLineLast}>{SITE.cities}</p>
+          <p className={styles.contactLineLast}>{contact.cities}</p>
           <Link href="/contact" className={styles.footerCta}>
-            DM for Booking
+            {footer.cta}
           </Link>
         </div>
       </div>
 
       <div className={styles.legal}>
         <div className={styles.legalInner}>
-          <p>© 2026 The Aurevia Productions. All rights reserved.</p>
-          <p>Events | Decor | Moments That Last</p>
+          <p>{footer.legalLeft}</p>
+          <p>{footer.legalRight}</p>
         </div>
       </div>
     </footer>

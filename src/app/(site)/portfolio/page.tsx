@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
+import { Emphasis } from '@/components/emphasis';
 import { PortfolioGallery } from '@/components/portfolio-gallery';
+import { getContent, portfolioFilters } from '@/lib/content';
 
 import styles from './portfolio.module.css';
 
@@ -11,26 +13,33 @@ export const metadata: Metadata = {
   alternates: { canonical: '/portfolio' },
 };
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const content = await getContent();
+  const { portfolio, media } = content;
+
   return (
     <>
       <section aria-labelledby="pf-h" className={styles.hero}>
         <div data-stagger className="container">
           <p data-reveal="y" className={styles.heroEyebrow}>
-            Portfolio
+            {portfolio.hero.eyebrow}
           </p>
           <h1 id="pf-h" data-reveal="y" className={styles.heroTitle}>
-            Moments that <span className="em">lasted</span>
+            <Emphasis text={portfolio.hero.title} />
           </h1>
           <p data-reveal="y" className={styles.heroBody}>
-            Filter by craft. Tap any frame to open it larger.
+            {portfolio.hero.body}
           </p>
         </div>
       </section>
 
       <section aria-label="Gallery" className={styles.gallery}>
         <div className="container">
-          <PortfolioGallery />
+          <PortfolioGallery
+            items={portfolio.items}
+            filters={portfolioFilters(content)}
+            media={media}
+          />
         </div>
       </section>
     </>

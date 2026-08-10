@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 
+import { Emphasis } from '@/components/emphasis';
 import { EnquiryForm } from '@/components/enquiry-form';
-import { SITE } from '@/content/site';
+import { getContent } from '@/lib/content';
 
 import styles from './contact.module.css';
 
@@ -12,19 +13,21 @@ export const metadata: Metadata = {
   alternates: { canonical: '/contact' },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { contactPage, contact } = await getContent();
+
   return (
     <>
       <section aria-labelledby="ct-h" className={styles.hero}>
         <div data-stagger className="container">
           <p data-reveal="y" className={styles.heroEyebrow}>
-            Contact
+            {contactPage.hero.eyebrow}
           </p>
           <h1 id="ct-h" data-reveal="y" className={styles.heroTitle}>
-            Tell us the <span className="em">date</span>
+            <Emphasis text={contactPage.hero.title} />
           </h1>
           <p data-reveal="y" className={styles.heroScript}>
-            We customize, You celebrate.
+            {contactPage.hero.script}
           </p>
         </div>
       </section>
@@ -32,65 +35,61 @@ export default function ContactPage() {
       <section aria-label="Enquiry" className={styles.enquiry}>
         <div className={styles.grid}>
           <div data-stagger className={styles.formCard}>
-            <EnquiryForm />
+            <EnquiryForm copy={contactPage} fallbackPhone={contact.phone} />
           </div>
 
           <div data-stagger className={styles.aside}>
             <div data-reveal="y" className={styles.reachCard}>
-              <p className={styles.reachEyebrow}>Faster than email</p>
-              <h2 className={styles.reachTitle}>WhatsApp &amp; DM</h2>
-              <p className={styles.reachBody}>
-                Send the date, city and a reference photo. We revert with
-                availability the same day.
-              </p>
+              <p className={styles.reachEyebrow}>{contactPage.reach.eyebrow}</p>
+              <h2 className={styles.reachTitle}>{contactPage.reach.title}</h2>
+              <p className={styles.reachBody}>{contactPage.reach.body}</p>
               <div className={styles.reachActions}>
                 <a
-                  href={SITE.whatsapp}
+                  href={contact.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.reachPrimary}
                 >
-                  WhatsApp Us
+                  {contactPage.reach.cta.primary}
                 </a>
                 <a
-                  href={SITE.instagram}
+                  href={contact.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.reachSecondary}
                 >
-                  DM on Instagram
+                  {contactPage.reach.cta.secondary}
                 </a>
               </div>
             </div>
 
             <div data-reveal="y" className={styles.studioCard}>
-              <p className={styles.studioLabel}>Studio</p>
-              <p className={styles.studioLine}>{SITE.address.street}</p>
+              <p className={styles.studioLabel}>{contactPage.studioLabel}</p>
+              <p className={styles.studioLine}>{contact.street}</p>
               <p className={styles.studioLine}>
-                {SITE.address.locality}, {SITE.address.region}{' '}
-                {SITE.address.postalCode}
+                {contact.locality}, {contact.region} {contact.postalCode}
               </p>
               <p className={styles.studioLine}>
-                <a href={`mailto:${SITE.email}`} className={styles.studioLink}>
-                  {SITE.email}
+                <a href={`mailto:${contact.email}`} className={styles.studioLink}>
+                  {contact.email}
                 </a>{' '}
                 ·{' '}
-                <a href={`tel:${SITE.phoneHref}`} className={styles.studioLink}>
-                  {SITE.phone}
+                <a href={`tel:${contact.phoneHref}`} className={styles.studioLink}>
+                  {contact.phone}
                 </a>
               </p>
-              <p className={styles.studioHours}>{SITE.hours}</p>
+              <p className={styles.studioHours}>{contact.hours}</p>
             </div>
 
             <div
               data-reveal="y"
               role="img"
-              aria-label="Map placeholder showing the studio location in Baner, Pune"
+              aria-label={`Map placeholder showing the studio location in ${contact.locality}`}
               className={styles.map}
             >
               <div aria-hidden="true" className={styles.mapPin} />
               <div aria-hidden="true" className={styles.mapCaption}>
-                Map placeholder · Baner, Pune
+                {contactPage.mapCaption}
               </div>
             </div>
           </div>

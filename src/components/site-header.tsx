@@ -13,7 +13,7 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader() {
+export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -79,7 +79,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link href="/contact" className={styles.cta}>
-            DM for Booking
+            {ctaLabel}
           </Link>
         </nav>
 
@@ -142,7 +142,7 @@ export function SiteHeader() {
           onClick={() => setOpen(false)}
           className={styles.drawerCta}
         >
-          DM for Booking
+          {ctaLabel}
         </Link>
         <p className={styles.drawerScript}>Events | Decor | Moments That Last</p>
       </div>

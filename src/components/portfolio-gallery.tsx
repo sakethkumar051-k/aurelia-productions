@@ -3,17 +3,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Photo } from '@/components/photo';
-import {
-  PORTFOLIO,
-  PORTFOLIO_FILTERS,
-  type PortfolioFilter,
-  portfolioSlot,
-} from '@/content/portfolio';
+import type { MediaAsset, PortfolioItem } from '@/content/schema';
 
 import styles from './portfolio-gallery.module.css';
 
-export function PortfolioGallery() {
-  const [filter, setFilter] = useState<PortfolioFilter>('All');
+/** Slot id for an item's photograph — matches the design handoff naming. */
+export function portfolioSlot(title: string): string {
+  return 'pf-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
+type PortfolioGalleryProps = {
+  items: PortfolioItem[];
+  filters: string[];
+  media: Record<string, MediaAsset>;
+};
+
+export function PortfolioGallery({
+  items: allItems,
+  filters,
+  media,
+}: PortfolioGalleryProps) {
+  const [filter, setFilter] = useState(filters[0] ?? 'All');
   const [index, setIndex] = useState(-1);
 
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -23,9 +33,9 @@ export function PortfolioGallery() {
   const items = useMemo(
     () =>
       filter === 'All'
-        ? PORTFOLIO
-        : PORTFOLIO.filter((item) => item.cat === filter),
-    [filter],
+        ? allItems
+        : allItems.filter((item) => item.cat === filter),
+    [allItems, filter],
   );
 
   const isOpen = index >= 0 && index < items.length;
@@ -114,7 +124,7 @@ export function PortfolioGallery() {
         aria-label="Filter portfolio by category"
         className={styles.filters}
       >
-        {PORTFOLIO_FILTERS.map((option) => {
+        {filters.map((option) => {
           const active = filter === option;
 
           return (
@@ -153,6 +163,7 @@ export function PortfolioGallery() {
               >
                 <Photo
                   slot={portfolioSlot(item.title)}
+                  asset={media[portfolioSlot(item.title)]}
                   alt={item.alt}
                   sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
                 />
@@ -207,6 +218,7 @@ export function PortfolioGallery() {
             <div className={styles.lbFrame}>
               <Photo
                 slot={portfolioSlot(current.title)}
+                asset={media[portfolioSlot(current.title)]}
                 alt={current.alt}
                 fit="contain"
                 sizes="(max-width: 1000px) 100vw, 980px"

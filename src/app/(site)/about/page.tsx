@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Emphasis } from '@/components/emphasis';
 import { LotusDivider } from '@/components/lotus-divider';
 import { Photo } from '@/components/photo';
-import { TEAM, TIMELINE } from '@/content/site';
+import { getContent } from '@/lib/content';
 
 import styles from './about.module.css';
 
@@ -14,19 +15,21 @@ export const metadata: Metadata = {
   alternates: { canonical: '/about' },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { about, media } = await getContent();
+
   return (
     <>
       <section aria-labelledby="ab-h" className={styles.hero}>
         <div data-stagger className="container">
           <p data-reveal="y" className={styles.heroEyebrow}>
-            About the house
+            {about.hero.eyebrow}
           </p>
           <h1 id="ab-h" data-reveal="y" className={styles.heroTitle}>
-            A studio built on <span className="em">detail</span>
+            <Emphasis text={about.hero.title} />
           </h1>
           <p data-reveal="y" className={styles.heroScript}>
-            We customize, You celebrate.
+            {about.hero.script}
           </p>
         </div>
       </section>
@@ -35,35 +38,24 @@ export default function AboutPage() {
         <div className={styles.storyGrid}>
           <div data-stagger>
             <p data-reveal="y" className={styles.storyEyebrow}>
-              Our story
+              {about.story.eyebrow}
             </p>
             <h2 id="story-h" data-reveal="y" className={styles.storyTitle}>
-              Nine years of <span className="em">first dances</span>
+              <Emphasis text={about.story.title} />
             </h2>
-            <p data-reveal="y" className={styles.storyBody}>
-              Aurevia began with one mandap in a Pune housing society and a
-              promise that nobody would have to chase us on the morning of the
-              function. Nine years on we are a workshop, a floral chain, a films
-              unit and a production crew — still run by the people who answer
-              your first call.
-            </p>
-            <p data-reveal="y" className={styles.storyBody}>
-              We design in-house and fabricate in-house. That is why a theme you
-              approve on a render is the theme that arrives on the truck, and
-              why a Normal package never feels like a lesser version of a
-              Premium one.
-            </p>
-            <p data-reveal="y" className={styles.storyBody}>
-              Weddings, festivals, films and brand stages — different crafts, one
-              standard.
-            </p>
+            {about.story.paragraphs.map((paragraph, index) => (
+              <p key={index} data-reveal="y" className={styles.storyBody}>
+                {paragraph}
+              </p>
+            ))}
           </div>
 
           <div data-reveal="zoom" className={styles.storyFigure}>
             <div className={styles.storyFrame}>
               <Photo
                 slot="about-story"
-                alt="Workshop table with fabric swatches, flowers and sketches"
+                asset={media['about-story']}
+                alt={about.story.imageAlt}
                 sizes="(max-width: 900px) 100vw, 50vw"
                 priority
               />
@@ -75,12 +67,10 @@ export default function AboutPage() {
       <section aria-labelledby="phil-h" className={styles.philosophy}>
         <div className={styles.philosophyInner}>
           <p data-reveal="y" className={styles.philosophyEyebrow}>
-            Philosophy
+            {about.philosophy.eyebrow}
           </p>
           <h2 id="phil-h" data-reveal="y" className={styles.philosophyQuote}>
-            A celebration is not a set of vendors. It is one story told in
-            flowers, light, sound and timing — and it should sound like your
-            family, not like ours.
+            {about.philosophy.quote}
           </h2>
           <LotusDivider className={styles.philosophyDivider} />
         </div>
@@ -89,14 +79,14 @@ export default function AboutPage() {
       <section aria-labelledby="proc-h" className={styles.process}>
         <div className="container">
           <p data-reveal="y" className={styles.processEyebrow}>
-            How we work
+            {about.process.eyebrow}
           </p>
           <h2 id="proc-h" data-reveal="y" className={styles.processTitle}>
-            Consult · Design · Setup · <span className="em">Execute</span>
+            <Emphasis text={about.process.title} />
           </h2>
 
           <div data-stagger className={styles.processGrid}>
-            {TIMELINE.map((step) => (
+            {about.process.steps.map((step) => (
               <div key={step.n} data-reveal="y" className={styles.processStep}>
                 <span aria-hidden="true" className={styles.processNode} />
                 <p className={styles.processNumber}>{step.n}</p>
@@ -111,18 +101,19 @@ export default function AboutPage() {
       <section aria-labelledby="team-h" className={styles.team}>
         <div className="container">
           <p data-reveal="y" className={styles.teamEyebrow}>
-            The people
+            {about.team.eyebrow}
           </p>
           <h2 id="team-h" data-reveal="y" className={styles.teamTitle}>
-            Who you will <span className="em">actually meet</span>
+            <Emphasis text={about.team.title} />
           </h2>
 
           <div data-stagger className={styles.teamGrid}>
-            {TEAM.map((member) => (
+            {about.team.members.map((member) => (
               <figure key={member.slot} data-reveal="y" className={styles.teamCard}>
                 <div className={styles.teamFrame}>
                   <Photo
                     slot={member.slot}
+                    asset={media[member.slot]}
                     alt={member.alt}
                     sizes="(max-width: 700px) 100vw, 25vw"
                   />
@@ -137,7 +128,7 @@ export default function AboutPage() {
 
           <div data-reveal="y" className={styles.teamCta}>
             <Link href="/contact" className="btn btnLg btnMaroon">
-              Get a Custom Quote
+              {about.team.cta}
             </Link>
           </div>
         </div>

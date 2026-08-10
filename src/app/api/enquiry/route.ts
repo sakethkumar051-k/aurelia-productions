@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+import { firestore } from '@/lib/firebase/admin';
 
 type EnquiryPayload = {
   name?: unknown;
@@ -19,8 +19,8 @@ const WINDOW_MS = 60 * 60 * 1000;
 
 /**
  * Best-effort throttle for a single server instance. Replace with a shared
- * store (Redis, Upstash, the admin database) once the backend is chosen —
- * this map resets on every cold start and is not shared between regions.
+ * store (Firestore, Upstash) if the site is ever deployed to more than one
+ * region — this map resets on every cold start.
  */
 const hits = new Map<string, number[]>();
 
@@ -58,7 +58,11 @@ export async function POST(request: Request) {
 
   if (rateLimited(ip)) {
     return NextResponse.json(
-      { ok: false, error: 'Too many enquiries from this connection. Please WhatsApp us instead.' },
+      {
+        ok: false,
+        error:
+          'Too many enquiries from this connection. Please WhatsApp us instead.',
+      },
       { status: 429 },
     );
   }
@@ -85,11 +89,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors }, { status: 422 });
   }
 
-  // TODO(backend): deliver the enquiry once the admin stack is chosen —
-  // transactional email to SITE.email, a row in the admin database, and a
-  // WhatsApp/CRM notification. Until then it is recorded in the server log so
-  // nothing submitted during preview is lost.
-  console.info('[enquiry]', JSON.stringify(enquiry));
+  // Archive first — the admin inbox is the record of every enquiry, and it must
+  // survive an email provider being down.
+  const db = firestore();
+  let stored = false;
+
+  if (db) {
+    try {
+      await db.collection('enquiries').add(enquiry);
+      stored = true;
+    } catch (error) {
+      console.error('[enquiry] Firestore write failed:', error);
+    }
+  }
+
+  // TODO(email): deliver to the studio inbox once the provider is chosen.
+  // Everything is recorded above, so a delivery failure never loses an enquiry.
+  if (!stored) {
+    console.info('[enquiry]', JSON.stringify(enquiry));
+  }
 
   return NextResponse.json({ ok: true });
 }

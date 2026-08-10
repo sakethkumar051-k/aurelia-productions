@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Emphasis, fill } from '@/components/emphasis';
 import { CheckMark, LineIcon } from '@/components/lotus-divider';
 import { Photo } from '@/components/photo';
-import { GANESH_DO, GANESH_TIERS } from '@/content/site';
+import { getContent } from '@/lib/content';
 
 import styles from './festive.module.css';
 
@@ -14,7 +15,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/festive-decor' },
 };
 
-export default function FestiveDecorPage() {
+export default async function FestiveDecorPage() {
+  const { festive, media } = await getContent();
+
   return (
     <>
       <section aria-labelledby="gn-h" className={styles.hero}>
@@ -22,24 +25,23 @@ export default function FestiveDecorPage() {
 
         <div data-stagger className={styles.heroInner}>
           <p data-reveal="y" className={styles.heroEyebrow}>
-            Festive Decor · Ganeshotsav 2026
+            {festive.hero.eyebrow}
           </p>
           <h1 id="gn-h" data-reveal="y" className={styles.heroTitle}>
-            Celebrate Bappa with <span className="em">Love &amp; Beauty</span>
+            <Emphasis text={festive.hero.title} />
           </h1>
           <p data-reveal="y" className={styles.heroScript}>
-            Normal to Premium · Homes, Mandals &amp; Offices
+            {festive.hero.script}
           </p>
           <p data-reveal="y" className={styles.heroBody}>
-            Makhar, backdrop, florals and lighting — designed, built and
-            installed by our own crew, then taken down after visarjan.
+            {festive.hero.body}
           </p>
           <div data-reveal="y" className={styles.heroActions}>
             <Link href="/contact" className="btn btnLg btnGold">
-              Book Your Dates Now
+              {festive.hero.cta.primary}
             </Link>
             <Link href="/portfolio" className="btn btnLg btnGhost">
-              See Festive Work
+              {festive.hero.cta.secondary}
             </Link>
           </div>
         </div>
@@ -48,14 +50,14 @@ export default function FestiveDecorPage() {
       <section aria-labelledby="wd-h" className={styles.wedo}>
         <div className="container">
           <h2 id="wd-h" data-reveal="y" className={styles.wedoTitle}>
-            We <span className="em">do</span>
+            <Emphasis text={festive.wedo.title} />
           </h2>
           <p data-reveal="y" className={styles.wedoBody}>
-            Pick the whole set or just the pieces your mandal still needs.
+            {festive.wedo.body}
           </p>
 
           <div data-stagger className={styles.wedoGrid}>
-            {GANESH_DO.map((item) => (
+            {festive.wedo.items.map((item) => (
               <div key={item.t} data-reveal="y" className={styles.wedoCard}>
                 <div aria-hidden="true" className={styles.wedoIcon}>
                   <LineIcon d={item.icon} size={26} />
@@ -70,14 +72,14 @@ export default function FestiveDecorPage() {
       <section aria-labelledby="cmp-h" className={styles.compare}>
         <div className="containerNarrow">
           <p data-reveal="y" className={styles.compareEyebrow}>
-            Packages
+            {festive.compare.eyebrow}
           </p>
           <h2 id="cmp-h" data-reveal="y" className={styles.compareTitle}>
-            Normal vs <span className="em">Premium</span>
+            <Emphasis text={festive.compare.title} />
           </h2>
 
           <div data-stagger className={styles.compareGrid}>
-            {GANESH_TIERS.map((tier) => (
+            {festive.compare.tiers.map((tier) => (
               <article
                 key={tier.tier}
                 data-reveal="y"
@@ -90,6 +92,7 @@ export default function FestiveDecorPage() {
                 <div className={styles.tierFrame}>
                   <Photo
                     slot={tier.slot}
+                    asset={media[tier.slot]}
                     alt={tier.alt}
                     sizes="(max-width: 900px) 100vw, 50vw"
                   />
@@ -116,7 +119,7 @@ export default function FestiveDecorPage() {
                     href="/contact"
                     className={`btn btnGold ${styles.tierCta}`}
                   >
-                    Book {tier.tier}
+                    {fill(festive.compare.cta, { tier: tier.tier })}
                   </Link>
                 </div>
               </article>
@@ -124,8 +127,7 @@ export default function FestiveDecorPage() {
           </div>
 
           <p data-reveal="y" className={styles.compareNote}>
-            Both tiers include installation, daily touch-ups on request and full
-            teardown after visarjan. Custom themes are quoted on drawing.
+            {festive.compare.note}
           </p>
         </div>
       </section>
@@ -133,21 +135,20 @@ export default function FestiveDecorPage() {
       <section aria-label="Booking" className={styles.booking}>
         <div data-stagger className={styles.bookingInner}>
           <p data-reveal="y" className={styles.bookingScript}>
-            Ganpati Bappa Morya
+            {festive.booking.script}
           </p>
           <h2 data-reveal="y" className={styles.bookingTitle}>
-            Book Your Dates Now!
+            <Emphasis text={festive.booking.title} />
           </h2>
           <p data-reveal="y" className={styles.bookingBody}>
-            Festive slots fill six weeks ahead. Send your lane, your idol height
-            and your budget — we revert with a drawing.
+            {festive.booking.body}
           </p>
           <div data-reveal="y" className={styles.bookingActions}>
             <Link href="/contact" className="btn btnLg btnGold">
-              DM for Booking
+              {festive.booking.cta.primary}
             </Link>
             <Link href="/services" className="btn btnLg btnGhost">
-              All Decor Services
+              {festive.booking.cta.secondary}
             </Link>
           </div>
         </div>

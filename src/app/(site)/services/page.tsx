@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Emphasis, fill } from '@/components/emphasis';
 import { Photo } from '@/components/photo';
-import { SERVICES } from '@/content/services';
-import { EXTRAS } from '@/content/site';
+import { getContent } from '@/lib/content';
 
 import styles from './services.module.css';
 
@@ -14,27 +14,28 @@ export const metadata: Metadata = {
   alternates: { canonical: '/services' },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { servicesPage, services, media } = await getContent();
+
   return (
     <>
       <section aria-labelledby="sv-h" className={styles.hero}>
         <div data-stagger className="container">
           <p data-reveal="y" className={styles.heroEyebrow}>
-            Services
+            {servicesPage.hero.eyebrow}
           </p>
           <h1 id="sv-h" data-reveal="y" className={styles.heroTitle}>
-            Everything a celebration <span className="em">needs</span>
+            <Emphasis text={servicesPage.hero.title} />
           </h1>
           <p data-reveal="y" className={styles.heroBody}>
-            Five pillars, each with its own team and its own detail pages. Mix
-            them, or hand us the whole calendar.
+            {servicesPage.hero.body}
           </p>
         </div>
       </section>
 
       <section aria-label="Service pillars" className={styles.pillars}>
         <div className={styles.pillarStack}>
-          {SERVICES.map((service) => (
+          {services.map((service) => (
             <article
               key={service.slug}
               data-stagger
@@ -44,6 +45,7 @@ export default function ServicesPage() {
                 <div className={styles.pillarFrame}>
                   <Photo
                     slot={`cat-${service.slug}`}
+                    asset={media[`cat-${service.slug}`]}
                     alt={service.hero}
                     sizes="(max-width: 900px) 100vw, 50vw"
                   />
@@ -73,7 +75,7 @@ export default function ServicesPage() {
                     href={`/services/${service.slug}`}
                     className="btn btnSm btnGhostFill"
                   >
-                    Open {service.short} Page
+                    {fill(servicesPage.rowCta, { name: service.short })}
                   </Link>
                 </div>
               </div>
@@ -85,14 +87,14 @@ export default function ServicesPage() {
       <section aria-labelledby="extra-h" className={styles.extras}>
         <div className="container">
           <p data-reveal="y" className={styles.extrasEyebrow}>
-            Also arranged
+            {servicesPage.extras.eyebrow}
           </p>
           <h2 id="extra-h" data-reveal="y" className={styles.extrasTitle}>
-            Add these to any <span className="em">package</span>
+            <Emphasis text={servicesPage.extras.title} />
           </h2>
 
           <div data-stagger className={styles.extrasGrid}>
-            {EXTRAS.map((extra) => (
+            {servicesPage.extras.items.map((extra) => (
               <div key={extra.t} data-reveal="y" className={styles.extrasCard}>
                 <h3 className={styles.extrasCardTitle}>{extra.t}</h3>
                 <p className={styles.extrasCardBody}>{extra.d}</p>

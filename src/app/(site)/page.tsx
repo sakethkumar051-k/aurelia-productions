@@ -1,22 +1,28 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Emphasis } from '@/components/emphasis';
 import { LineIcon, LotusDivider } from '@/components/lotus-divider';
 import { Marquee } from '@/components/marquee';
 import { Photo } from '@/components/photo';
-import { SERVICES } from '@/content/services';
-import { FEATURED, STATS, TESTIMONIALS, TRUST } from '@/content/site';
+import { getContent } from '@/lib/content';
 
 import styles from './home.module.css';
 
-export const metadata: Metadata = {
-  title: 'The Aurevia Productions — Events, Decor & Production across India',
-  description:
-    'Weddings, festive decor, photography, entertainment and corporate production — designed in-house and executed to the minute, from Pune and Mumbai to the rest of India.',
-  alternates: { canonical: '/' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { brand } = await getContent();
 
-export default function HomePage() {
+  return {
+    title: `${brand.name} — Events, Decor & Production across India`,
+    description: brand.description,
+    alternates: { canonical: '/' },
+  };
+}
+
+export default async function HomePage() {
+  const content = await getContent();
+  const { home, media } = content;
+
   return (
     <>
       <section aria-labelledby="hero-h" className={styles.hero}>
@@ -32,32 +38,30 @@ export default function HomePage() {
           <div data-stagger className={styles.heroCopy}>
             <p data-reveal="y" className={styles.heroEyebrow}>
               <span aria-hidden="true" data-reveal="x" className={styles.heroRule} />
-              Event Management · Decor · Production · India
+              {home.hero.eyebrow}
             </p>
 
             <h1 id="hero-h" className={styles.heroTitle}>
-              <span data-reveal="y">The Aurevia</span>
+              <span data-reveal="y">{home.hero.titleLine1}</span>
               <span data-reveal="y" className={styles.heroTitleItalic}>
-                Productions
+                {home.hero.titleLine2}
               </span>
             </h1>
 
             <p data-reveal="y" className={styles.heroScript}>
-              Events | Decor | Moments That Last
+              {home.hero.script}
             </p>
 
             <p data-reveal="y" className={styles.heroBody}>
-              We customize, You celebrate. A design-led house staging weddings,
-              festivals and brand spectacles across India — drawn by hand,
-              executed to the minute.
+              {home.hero.body}
             </p>
 
             <div data-reveal="y" className={styles.heroActions}>
               <Link href="/contact" className="btn btnLg btnGold btnGoldLift">
-                Book Your Dates Now
+                {home.hero.cta.primary}
               </Link>
               <Link href="/services" className="btn btnLg btnGhost">
-                View Our Services
+                {home.hero.cta.secondary}
               </Link>
             </div>
           </div>
@@ -66,26 +70,25 @@ export default function HomePage() {
         <div aria-hidden="true" className={styles.heroEdge} />
       </section>
 
-      <Marquee />
+      <Marquee words={home.marquee} />
 
       <section aria-labelledby="cat-h" className={styles.pillars}>
         <div className="container">
           <div data-stagger className={styles.sectionHead}>
             <p data-reveal="y" className={styles.sectionEyebrow}>
-              What we do
+              {home.pillars.eyebrow}
             </p>
             <h2 id="cat-h" data-reveal="y" className={styles.sectionTitle}>
-              Five pillars, one <span className="em">atelier</span>
+              <Emphasis text={home.pillars.title} />
             </h2>
             <LotusDivider className={styles.sectionDivider} />
             <p data-reveal="y" className={styles.sectionBody}>
-              Every mandap, every frame, every cue sheet is made for one family
-              or one brand — never repeated.
+              {home.pillars.body}
             </p>
           </div>
 
           <div data-stagger className={styles.pillarGrid}>
-            {SERVICES.map((service) => (
+            {content.services.map((service) => (
               <article
                 key={service.slug}
                 data-reveal="y"
@@ -94,6 +97,7 @@ export default function HomePage() {
                 <div className={styles.pillarFrame}>
                   <Photo
                     slot={`cat-${service.slug}`}
+                    asset={media[`cat-${service.slug}`]}
                     alt={service.hero}
                     sizes="(max-width: 700px) 100vw, (max-width: 1280px) 50vw, 25vw"
                   />
@@ -128,10 +132,10 @@ export default function HomePage() {
           <div data-stagger className={styles.featuredHead}>
             <div>
               <p data-reveal="y" className={styles.featuredEyebrow}>
-                Featured work
+                {home.featured.eyebrow}
               </p>
               <h2 id="feat-h" data-reveal="y" className={styles.featuredTitle}>
-                Recent <span className="em">celebrations</span>
+                <Emphasis text={home.featured.title} />
               </h2>
             </div>
             <Link
@@ -139,12 +143,12 @@ export default function HomePage() {
               href="/portfolio"
               className="btn btnSm btnGhost"
             >
-              Full Portfolio
+              {home.featured.cta}
             </Link>
           </div>
 
           <div data-stagger className={styles.featuredGrid}>
-            {FEATURED.map((item) => (
+            {home.featured.items.map((item) => (
               <figure
                 key={item.slot}
                 data-reveal="y"
@@ -153,6 +157,7 @@ export default function HomePage() {
                 <div className={styles.featuredFrame}>
                   <Photo
                     slot={item.slot}
+                    asset={media[item.slot]}
                     alt={item.alt}
                     sizes="(max-width: 700px) 100vw, 33vw"
                   />
@@ -167,7 +172,7 @@ export default function HomePage() {
           </div>
 
           <div data-stagger className={styles.stats}>
-            {STATS.map((stat) => (
+            {home.stats.map((stat) => (
               <div key={stat.label} data-reveal="y" className={styles.statCell}>
                 <p className={styles.statNumber}>
                   <span data-count={stat.n}>{stat.n}</span>
@@ -183,14 +188,14 @@ export default function HomePage() {
       <section aria-labelledby="why-h" className={styles.why}>
         <div className="container">
           <h2 id="why-h" data-reveal="y" className={styles.whyTitle}>
-            Why families and brands <span className="em">choose us</span>
+            <Emphasis text={home.why.title} />
           </h2>
           <p data-reveal="y" className={styles.whyScript}>
-            We customize, You celebrate.
+            {home.why.script}
           </p>
 
           <div data-stagger className={styles.whyGrid}>
-            {TRUST.map((item) => (
+            {home.why.items.map((item) => (
               <div key={item.title} data-reveal="y" className={styles.whyCard}>
                 <div aria-hidden="true" className={styles.whyIcon}>
                   <LineIcon d={item.icon} />
@@ -206,14 +211,14 @@ export default function HomePage() {
       <section aria-labelledby="test-h" className={styles.testimonials}>
         <div className="containerNarrow">
           <p data-reveal="y" className={styles.testimonialEyebrow}>
-            Kind words
+            {home.testimonials.eyebrow}
           </p>
           <h2 id="test-h" data-reveal="y" className={styles.testimonialTitle}>
-            Moments that <span className="em">lasted</span>
+            <Emphasis text={home.testimonials.title} />
           </h2>
 
           <div data-stagger className={styles.testimonialGrid}>
-            {TESTIMONIALS.map((item) => (
+            {home.testimonials.items.map((item) => (
               <blockquote
                 key={item.name}
                 data-reveal="y"
@@ -236,21 +241,20 @@ export default function HomePage() {
       <section aria-labelledby="cta-h" className={styles.closing}>
         <div data-stagger className={styles.closingInner}>
           <p data-reveal="y" className={styles.closingScript}>
-            Let&rsquo;s begin
+            {home.closing.script}
           </p>
           <h2 id="cta-h" data-reveal="y" className={styles.closingTitle}>
-            Your date is still <span className="em">open</span>
+            <Emphasis text={home.closing.title} />
           </h2>
           <p data-reveal="y" className={styles.closingBody}>
-            Tell us the city, the date and the dream. We send back a mood board
-            and a costed plan within 48 hours.
+            {home.closing.body}
           </p>
           <div data-reveal="y" className={styles.closingActions}>
             <Link href="/contact" className="btn btnLg btnGold">
-              Get a Custom Quote
+              {home.closing.cta.primary}
             </Link>
             <Link href="/festive-decor" className="btn btnLg btnGhost">
-              Festive Decor 2026
+              {home.closing.cta.secondary}
             </Link>
           </div>
         </div>

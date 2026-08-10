@@ -1,9 +1,10 @@
 import type { MetadataRoute } from 'next';
 
-import { SERVICES } from '@/content/services';
+import { getContent } from '@/lib/content';
 import { siteUrl } from '@/lib/site-url';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { services } = await getContent();
   const base = siteUrl();
   const lastModified = new Date();
 
@@ -23,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: page.priority,
     })),
-    ...SERVICES.map((service) => ({
+    ...services.map((service) => ({
       url: `${base}/services/${service.slug}`,
       lastModified,
       changeFrequency: 'monthly' as const,

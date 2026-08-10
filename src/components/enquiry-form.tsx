@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 
-import { BUDGETS, EVENT_TYPES, SITE } from '@/content/site';
+import type { Content } from '@/content/schema';
 
 import styles from './enquiry-form.module.css';
 
@@ -11,11 +11,18 @@ type FieldErrors = Partial<Record<'name' | 'phone' | 'type', string>>;
 
 const PHONE_PATTERN = /^[\d+\-\s()]{7,20}$/;
 
-export function EnquiryForm() {
+type EnquiryFormProps = {
+  copy: Content['contactPage'];
+  fallbackPhone: string;
+};
+
+export function EnquiryForm({ copy, fallbackPhone }: EnquiryFormProps) {
   const [status, setStatus] = useState<Status>('idle');
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
+
+  const { form, thanks } = copy;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,7 +87,7 @@ export function EnquiryForm() {
       setStatus('sent');
     } catch {
       setFormError(
-        `Network trouble on our side. Please try again or WhatsApp ${SITE.phone}.`,
+        `Network trouble on our side. Please try again or WhatsApp ${fallbackPhone}.`,
       );
       setStatus('error');
     }
@@ -95,12 +102,9 @@ export function EnquiryForm() {
         }
         className={styles.thanks}
       >
-        <p className={styles.thanksScript}>Thank you</p>
-        <h2 className={styles.thanksTitle}>Your enquiry is with us</h2>
-        <p className={styles.thanksBody}>
-          We reply within 48 hours with a mood board and a costed plan. For
-          urgent dates, WhatsApp us directly.
-        </p>
+        <p className={styles.thanksScript}>{thanks.script}</p>
+        <h2 className={styles.thanksTitle}>{thanks.title}</h2>
+        <p className={styles.thanksBody}>{thanks.body}</p>
         <button
           type="button"
           onClick={() => {
@@ -110,7 +114,7 @@ export function EnquiryForm() {
           }}
           className={`btn btnXs ${styles.reset}`}
         >
-          Send another
+          {thanks.cta}
         </button>
       </div>
     );
@@ -119,10 +123,10 @@ export function EnquiryForm() {
   return (
     <>
       <h2 data-reveal="y" className={styles.title}>
-        Enquiry form
+        {form.title}
       </h2>
       <p data-reveal="y" className={styles.intro}>
-        Six fields. We reply within 48 hours with a plan and a number.
+        {form.intro}
       </p>
 
       {formError && (
@@ -134,14 +138,14 @@ export function EnquiryForm() {
       <form ref={formRef} noValidate onSubmit={onSubmit} className={styles.form}>
         <div className={styles.field}>
           <label htmlFor="f-name" className={styles.label}>
-            Your name
+            {form.labels.name}
           </label>
           <input
             id="f-name"
             name="name"
             type="text"
             autoComplete="name"
-            placeholder="Full name"
+            placeholder={form.placeholders.name}
             aria-invalid={errors.name ? 'true' : undefined}
             aria-describedby={errors.name ? 'f-name-error' : undefined}
             className={styles.input}
@@ -155,14 +159,14 @@ export function EnquiryForm() {
 
         <div className={styles.field}>
           <label htmlFor="f-phone" className={styles.label}>
-            Phone / WhatsApp
+            {form.labels.phone}
           </label>
           <input
             id="f-phone"
             name="phone"
             type="tel"
             autoComplete="tel"
-            placeholder="+91"
+            placeholder={form.placeholders.phone}
             aria-invalid={errors.phone ? 'true' : undefined}
             aria-describedby={errors.phone ? 'f-phone-error' : undefined}
             className={styles.input}
@@ -176,7 +180,7 @@ export function EnquiryForm() {
 
         <div className={styles.field}>
           <label htmlFor="f-type" className={styles.label}>
-            Event type
+            {form.labels.type}
           </label>
           <select
             id="f-type"
@@ -187,9 +191,9 @@ export function EnquiryForm() {
             className={styles.input}
           >
             <option value="" disabled>
-              Choose one
+              {form.placeholders.select}
             </option>
-            {EVENT_TYPES.map((option) => (
+            {form.eventTypes.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -204,28 +208,28 @@ export function EnquiryForm() {
 
         <div className={styles.field}>
           <label htmlFor="f-date" className={styles.label}>
-            Event date
+            {form.labels.date}
           </label>
           <input id="f-date" name="date" type="date" className={styles.input} />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="f-city" className={styles.label}>
-            City
+            {form.labels.city}
           </label>
           <input
             id="f-city"
             name="city"
             type="text"
             autoComplete="address-level2"
-            placeholder="Pune, Mumbai, elsewhere"
+            placeholder={form.placeholders.city}
             className={styles.input}
           />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="f-budget" className={styles.label}>
-            Budget range
+            {form.labels.budget}
           </label>
           <select
             id="f-budget"
@@ -233,8 +237,8 @@ export function EnquiryForm() {
             defaultValue=""
             className={styles.input}
           >
-            <option value="">Choose a range</option>
-            {BUDGETS.map((option) => (
+            <option value="">{form.placeholders.budget}</option>
+            {form.budgets.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -244,13 +248,13 @@ export function EnquiryForm() {
 
         <div className={`${styles.field} ${styles.fieldWide}`}>
           <label htmlFor="f-msg" className={styles.label}>
-            Tell us about it
+            {form.labels.message}
           </label>
           <textarea
             id="f-msg"
             name="message"
             rows={5}
-            placeholder="Functions, guest count, venue, the look you have in mind"
+            placeholder={form.placeholders.message}
             className={`${styles.input} ${styles.textarea}`}
           />
         </div>
@@ -266,7 +270,7 @@ export function EnquiryForm() {
           disabled={status === 'submitting'}
           className={`btn btnLg btnMaroon ${styles.submit}`}
         >
-          {status === 'submitting' ? 'Sending…' : 'Send Enquiry'}
+          {status === 'submitting' ? form.submitting : form.submit}
         </button>
       </form>
     </>
