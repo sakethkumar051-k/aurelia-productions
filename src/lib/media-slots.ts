@@ -1,4 +1,5 @@
 import type { Content } from '@/content/schema';
+import { portfolioSlot } from '@/content/portfolio';
 
 export type MediaSlot = {
   slot: string;
@@ -7,10 +8,6 @@ export type MediaSlot = {
   /** The art-direction brief — what this frame is meant to show. */
   brief: string;
 };
-
-function portfolioSlot(title: string): string {
-  return 'pf-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-}
 
 /**
  * Every photo position on the site, derived from the content tree.
@@ -82,7 +79,7 @@ export function mediaSlots(content: Content): MediaSlot[] {
 
   for (const item of content.portfolio.items) {
     slots.push({
-      slot: portfolioSlot(item.title),
+      slot: item.slot || portfolioSlot(item.title),
       label: `Portfolio — ${item.title}`,
       group: 'Portfolio',
       brief: item.alt,

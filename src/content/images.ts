@@ -11,8 +11,8 @@ import aboutStory from '../../public/images/about-story.webp';
  * the art-direction placeholder instead, so the site stays presentable while the
  * client's shoot is still in progress.
  *
- * When the admin backend lands, this map is the seam to replace: swap the static
- * imports for records fetched from the media library, keeping the same slot keys.
+ * Admin-uploaded Cloudinary photos take precedence over these bundled images.
+ * Removing an upload restores the image registered here for that slot.
  *
  * Slot ids in use
  *   cat-<service-slug>        five pillar cards on the home page

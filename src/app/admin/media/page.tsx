@@ -1,4 +1,5 @@
 import { MediaManager } from '@/components/admin/media-manager';
+import { getImage } from '@/content/images';
 import { requireAdmin } from '@/lib/auth';
 import { isCloudinaryServerConfigured } from '@/lib/cloudinary-server';
 import { getContentFresh } from '@/lib/content';
@@ -11,9 +12,17 @@ export default async function MediaPage() {
 
   const content = await getContentFresh();
   const slots = mediaSlots(content);
-  const filled = slots.filter((slot) => content.media[slot.slot]).length;
+  const filled = slots.filter((slot) => content.media[slot.slot] || getImage(slot.slot)).length;
+  const bundled = Object.fromEntries(
+    slots.flatMap((slot) => {
+      const image = getImage(slot.slot);
+      return image ? [[slot.slot, image.src]] : [];
+    }),
+  );
 
-  const uploadsEnabled = isCloudinaryServerConfigured();
+  const uploadsEnabled = isCloudinaryServerConfigured() && Boolean(
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  );
   const cloudName =
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ??
     process.env.CLOUDINARY_CLOUD_NAME ??
@@ -38,7 +47,7 @@ export default async function MediaPage() {
 
       {!uploadsEnabled && (
         <div className={`${styles.notice} ${styles.noticeWarn}`}>
-          Cloudinary is not configured, so uploading is disabled. Add these to
+          Cloudinary is not fully configured, so uploading is disabled. Add these to
           your environment and restart:
           <code className={styles.noticeCode}>
             {[
@@ -54,6 +63,7 @@ export default async function MediaPage() {
       <MediaManager
         groups={groupSlots(slots)}
         media={content.media}
+        bundled={bundled}
         cloudName={cloudName}
         uploadsEnabled={uploadsEnabled}
       />

@@ -8,6 +8,8 @@
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
   position: sticky;
   top: 0;
   align-self: start;
@@ -122,6 +124,17 @@
 
 .signOut:hover {
   background: rgba(201, 164, 76, 0.16);
+}
+
+.signOut:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.sidebarError {
+  margin-top: 10px;
+  color: var(--gold-light);
+  line-height: 1.5;
 }
 
 /* Main column ------------------------------------------------------------ */

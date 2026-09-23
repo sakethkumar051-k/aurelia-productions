@@ -1,10 +1,11 @@
 import 'server-only';
 
-import { cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
+import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
 const APP_NAME = 'aurevia-admin';
+let invalidConfig = false;
 
 /**
  * Firebase Admin, initialised lazily from environment variables.
@@ -26,10 +27,11 @@ function credentials() {
 }
 
 export function isFirebaseConfigured(): boolean {
-  return credentials() !== null;
+  return app() !== null;
 }
 
 function app() {
+  if (invalidConfig) return null;
   const config = credentials();
   if (!config) return null;
 
@@ -38,9 +40,14 @@ function app() {
 
   try {
     return initializeApp({ credential: cert(config) }, APP_NAME);
-  } catch {
-    // Another module initialised it between the lookup and the call.
-    return getApp(APP_NAME);
+  } catch (error) {
+    // A malformed production key must not take down the login page (or the
+    // public site). A genuinely concurrent init can still be reused.
+    const concurrent = getApps().find((instance) => instance.name === APP_NAME);
+    if (concurrent) return concurrent;
+    invalidConfig = true;
+    console.error('[firebase] Admin credentials are invalid:', error);
+    return null;
   }
 }
 

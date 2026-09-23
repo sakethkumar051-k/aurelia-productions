@@ -7,11 +7,6 @@ import type { MediaAsset, PortfolioItem } from '@/content/schema';
 
 import styles from './portfolio-gallery.module.css';
 
-/** Slot id for an item's photograph — matches the design handoff naming. */
-export function portfolioSlot(title: string): string {
-  return 'pf-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-}
-
 type PortfolioGalleryProps = {
   items: PortfolioItem[];
   filters: string[];
@@ -32,10 +27,10 @@ export function PortfolioGallery({
 
   const items = useMemo(
     () =>
-      filter === 'All'
+      filter === filters[0]
         ? allItems
         : allItems.filter((item) => item.cat === filter),
-    [allItems, filter],
+    [allItems, filter, filters],
   );
 
   const isOpen = index >= 0 && index < items.length;
@@ -150,7 +145,7 @@ export function PortfolioGallery({
 
       <div className={styles.masonry}>
         {items.map((item, position) => (
-          <figure key={item.title} className={styles.tile}>
+          <figure key={item.slot} className={styles.tile}>
             <button
               type="button"
               aria-label={`Open larger view: ${item.title}`}
@@ -162,8 +157,8 @@ export function PortfolioGallery({
                 style={{ height: `${item.h}px` }}
               >
                 <Photo
-                  slot={portfolioSlot(item.title)}
-                  asset={media[portfolioSlot(item.title)]}
+                  slot={item.slot}
+                  asset={media[item.slot]}
                   alt={item.alt}
                   sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
                 />
@@ -217,8 +212,8 @@ export function PortfolioGallery({
           <figure className={styles.lbFigure}>
             <div className={styles.lbFrame}>
               <Photo
-                slot={portfolioSlot(current.title)}
-                asset={media[portfolioSlot(current.title)]}
+                slot={current.slot}
+                asset={media[current.slot]}
                 alt={current.alt}
                 fit="contain"
                 sizes="(max-width: 1000px) 100vw, 980px"

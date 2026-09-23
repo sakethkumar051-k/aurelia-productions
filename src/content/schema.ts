@@ -59,6 +59,8 @@ export const serviceSchema = z.object({
 });
 
 export const portfolioItemSchema = z.object({
+  /** Permanent photo key. Editing the title must not detach its photograph. */
+  slot: text,
   cat: text,
   title: text,
   place: text,
@@ -242,6 +244,7 @@ const festiveSchema = z.object({
 
 const portfolioPageSchema = z.object({
   hero: heroBlock,
+  allLabel: text,
   items: list(portfolioItemSchema),
 });
 
@@ -301,6 +304,8 @@ export const contentSchema = z.object({
   brand: z.object({
     name: text,
     shortName: text,
+    logoLine1: text,
+    logoLine2: text,
     tagline: text,
     motto: text,
     description: text,
@@ -320,7 +325,18 @@ export const contentSchema = z.object({
     cities: text,
     founded: text,
   }),
-  header: z.object({ cta: text }),
+  header: z.object({
+    cta: text,
+    menuLabel: text,
+    links: z.object({
+      home: text,
+      about: text,
+      services: text,
+      festive: text,
+      portfolio: text,
+      contact: text,
+    }),
+  }),
   footer: footerSchema,
   home: homeSchema,
   about: aboutSchema,
@@ -329,6 +345,13 @@ export const contentSchema = z.object({
   festive: festiveSchema,
   portfolio: portfolioPageSchema,
   contactPage: contactPageSchema,
+  notFound: z.object({
+    eyebrow: text,
+    title: text,
+    body: text,
+    homeCta: text,
+    contactCta: text,
+  }),
   services: list(serviceSchema),
   media: z.record(text, mediaAssetSchema),
 });
@@ -355,6 +378,7 @@ export const CONTENT_SECTIONS = [
   'festive',
   'portfolio',
   'contactPage',
+  'notFound',
   'services',
   'media',
 ] as const;

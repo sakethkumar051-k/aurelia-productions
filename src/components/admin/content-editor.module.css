@@ -74,6 +74,17 @@
   background: rgba(122, 31, 31, 0.07);
 }
 
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input[readonly] {
+  background: rgba(201, 164, 76, 0.08);
+  color: rgba(59, 21, 18, 0.6);
+  cursor: default;
+}
+
 /* Fields ----------------------------------------------------------------- */
 
 .group {

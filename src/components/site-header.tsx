@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { NAV } from '@/content/site';
+import type { Content } from '@/content/schema';
+import { siteNavigation } from '@/lib/navigation';
 
 import styles from './site-header.module.css';
 
@@ -13,7 +14,9 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
+export function SiteHeader({ content }: { content: Pick<Content, 'brand' | 'header'> }) {
+  const { brand, header } = content;
+  const nav = siteNavigation(header);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -22,7 +25,7 @@ export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
   const close = useCallback(() => {
     setOpen(false);
     toggleRef.current?.focus();
-  }, []);
+  }, [setOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,19 +55,19 @@ export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
         <Link
           href="/"
           className={styles.brand}
-          aria-label="The Aurevia Productions — home"
+          aria-label={`${brand.name} — home`}
         >
           <span aria-hidden="true" className={styles.brandMark}>
-            A
+            {brand.logoLine1.charAt(0)}
           </span>
           <span className={styles.brandText}>
-            <span className={styles.brandName}>Aurevia</span>
-            <span className={styles.brandSub}>Productions</span>
+            <span className={styles.brandName}>{brand.logoLine1}</span>
+            <span className={styles.brandSub}>{brand.logoLine2}</span>
           </span>
         </Link>
 
         <nav aria-label="Primary" className={styles.nav}>
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -79,7 +82,7 @@ export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
             </Link>
           ))}
           <Link href="/contact" className={styles.cta}>
-            {ctaLabel}
+            {header.cta}
           </Link>
         </nav>
 
@@ -119,9 +122,9 @@ export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
         aria-label="Site menu"
         inert={!open}
       >
-        <p className={styles.drawerEyebrow}>Menu</p>
+        <p className={styles.drawerEyebrow}>{header.menuLabel}</p>
         <nav aria-label="Mobile" className={styles.drawerNav}>
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -142,9 +145,9 @@ export function SiteHeader({ ctaLabel }: { ctaLabel: string }) {
           onClick={() => setOpen(false)}
           className={styles.drawerCta}
         >
-          {ctaLabel}
+          {header.cta}
         </Link>
-        <p className={styles.drawerScript}>Events | Decor | Moments That Last</p>
+        <p className={styles.drawerScript}>{brand.tagline}</p>
       </div>
     </header>
   );

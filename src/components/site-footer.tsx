@@ -1,12 +1,12 @@
 import Link from 'next/link';
 
 import type { Content } from '@/content/schema';
-import { NAV } from '@/content/site';
+import { siteNavigation } from '@/lib/navigation';
 
 import styles from './site-footer.module.css';
 
 export function SiteFooter({ content }: { content: Content }) {
-  const { footer, contact, services } = content;
+  const { footer, contact, services, brand, header } = content;
 
   return (
     <footer className={styles.footer}>
@@ -23,8 +23,8 @@ export function SiteFooter({ content }: { content: Content }) {
 
       <div className={styles.columns}>
         <div>
-          <p className={styles.brandName}>Aurevia</p>
-          <p className={styles.brandSub}>Productions</p>
+          <p className={styles.brandName}>{brand.logoLine1}</p>
+          <p className={styles.brandSub}>{brand.logoLine2}</p>
           <p className={styles.brandScript}>{footer.script}</p>
           <p className={styles.brandBlurb}>{footer.blurb}</p>
         </div>
@@ -32,7 +32,7 @@ export function SiteFooter({ content }: { content: Content }) {
         <div>
           <p className={styles.colLabel}>{footer.pagesLabel}</p>
           <ul className={styles.colList}>
-            {NAV.map((item) => (
+            {siteNavigation(header).map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className={styles.colLink}>
                   {item.label}

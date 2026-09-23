@@ -29,11 +29,13 @@ function thumbnail(publicId: string, cloudName: string): string {
 function SlotCard({
   slot,
   asset,
+  bundled,
   cloudName,
   uploadsEnabled,
 }: {
   slot: MediaSlot;
   asset?: MediaAsset;
+  bundled?: string;
   cloudName: string;
   uploadsEnabled: boolean;
 }) {
@@ -143,16 +145,20 @@ function SlotCard({
     }
 
     setCurrent(undefined);
-    setStatus('Removed — the placeholder is showing again.');
+    setStatus(
+      bundled
+        ? 'Removed — the original photo is showing again.'
+        : 'Removed — the placeholder is showing again.',
+    );
   }
 
   return (
     <div className={styles.card}>
       <div className={styles.frame}>
-        {current && cloudName ? (
+        {(current && cloudName) || bundled ? (
           // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail, not page content
           <img
-            src={thumbnail(current.publicId, cloudName)}
+            src={current && cloudName ? thumbnail(current.publicId, cloudName) : bundled}
             alt=""
             width={480}
             height={320}
@@ -164,7 +170,10 @@ function SlotCard({
 
       <div className={styles.body}>
         <p className={styles.label}>{slot.label}</p>
-        {current && <p className={styles.brief}>{slot.brief}</p>}
+        {(current || bundled) && <p className={styles.brief}>{slot.brief}</p>}
+        {!current && bundled && (
+          <p className={styles.status}>Original website photo</p>
+        )}
         <p className={styles.slotId}>{slot.slot}</p>
 
         {progress >= 0 && (
@@ -195,7 +204,7 @@ function SlotCard({
             onClick={() => inputRef.current?.click()}
             className={styles.upload}
           >
-            {current ? 'Replace' : 'Upload'}
+            {current || bundled ? 'Replace' : 'Upload'}
           </button>
           {current && (
             <button
@@ -229,11 +238,13 @@ function SlotCard({
 export function MediaManager({
   groups,
   media,
+  bundled,
   cloudName,
   uploadsEnabled,
 }: {
   groups: [string, MediaSlot[]][];
   media: Record<string, MediaAsset>;
+  bundled: Record<string, string>;
   cloudName: string;
   uploadsEnabled: boolean;
 }) {
@@ -248,6 +259,7 @@ export function MediaManager({
                 key={slot.slot}
                 slot={slot}
                 asset={media[slot.slot]}
+                bundled={bundled[slot.slot]}
                 cloudName={cloudName}
                 uploadsEnabled={uploadsEnabled}
               />

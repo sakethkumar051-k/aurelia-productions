@@ -61,8 +61,8 @@ export default async function EnquiriesPage() {
           <p className={styles.pageEyebrow}>Newest first · last 100</p>
           <h1 className={styles.pageTitle}>Enquiries</h1>
           <p className={styles.pageHint}>
-            Everything sent through the contact form. Each one is also delivered
-            by email, so this is the archive rather than the alert.
+            Everything sent through the contact form is stored here. Check this
+            inbox regularly; email notifications have not been connected yet.
           </p>
         </div>
       </div>

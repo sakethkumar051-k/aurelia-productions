@@ -3,6 +3,7 @@ import 'server-only';
 import { cacheTag } from 'next/cache';
 
 import { defaultContent } from '@/content/defaults';
+import { portfolioSlot } from '@/content/portfolio';
 import {
   type Content,
   type ContentSection,
@@ -60,8 +61,27 @@ async function readOverrides(): Promise<Partial<Record<ContentSection, unknown>>
       const data = doc.data();
       // Lists are stored under `items` because Firestore documents cannot hold
       // a bare array at the root.
-      overrides[section] =
-        section === 'services' ? (data.items ?? []) : data;
+      if (section === 'services') {
+        overrides[section] = data.items ?? [];
+      } else if (section === 'portfolio' && Array.isArray(data.items)) {
+        // Older saved portfolios had no permanent photo key. Keep their
+        // existing Cloudinary slots when copy is edited after this upgrade.
+        overrides[section] = {
+          ...data,
+          items: data.items.map((raw: unknown, index: number) => {
+            if (!isPlainObject(raw) || typeof raw.slot === 'string' && raw.slot) return raw;
+            const original = defaultContent.portfolio.items.find(
+              (item) => item.title === raw.title,
+            ) ?? defaultContent.portfolio.items[index];
+            return {
+              ...raw,
+              slot: original?.slot ?? portfolioSlot(String(raw.title ?? `item-${index + 1}`)),
+            };
+          }),
+        };
+      } else {
+        overrides[section] = data;
+      }
     }
 
     return overrides;
@@ -126,5 +146,5 @@ export function portfolioFilters(content: Content): string[] {
   for (const item of content.portfolio.items) {
     if (!seen.includes(item.cat)) seen.push(item.cat);
   }
-  return ['All', ...seen];
+  return [content.portfolio.allLabel, ...seen];
 }

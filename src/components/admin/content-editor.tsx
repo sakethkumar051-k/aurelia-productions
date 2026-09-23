@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState, useTransition } from 'react';
+import { useId, useRef, useState, useTransition } from 'react';
 
 import { resetSection, saveSection } from '@/app/admin/actions';
 
@@ -66,7 +66,8 @@ const HINTS: Record<string, string> = {
   cta: 'Use {tier} or {name} where the tier or pillar name should appear.',
   rowCta: 'Use {name} where the pillar short name should appear.',
   icon: 'SVG path data drawn on a 24×24 grid. Leave alone unless you have a replacement path.',
-  slot: 'Links this entry to its photograph in Media. Changing it detaches the current image.',
+  slot: 'Permanent photo key. The photograph stays linked when you rename this entry.',
+  slug: 'Permanent service URL and photo key. It stays fixed when you edit the service title.',
   h: 'Controls how tall this tile is in the portfolio masonry — 300 to 420 works well.',
 };
 
@@ -109,7 +110,12 @@ function blankLike(sample: unknown): unknown {
     case 'object': {
       const result: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(sample as object)) {
-        result[key] = blankLike(value);
+        result[key] =
+          key === 'slot'
+            ? `custom-${crypto.randomUUID()}`
+            : key === 'slug'
+              ? `new-service-${crypto.randomUUID().slice(0, 8)}`
+              : blankLike(value);
       }
       return result;
     }
@@ -137,6 +143,7 @@ function itemSummary(value: unknown, index: number): string {
 type NodeProps = {
   fieldKey: string;
   value: unknown;
+  sample?: unknown;
   onChange: (next: unknown) => void;
   depth: number;
 };
@@ -146,6 +153,7 @@ function StringField({ fieldKey, value, onChange }: NodeProps) {
   const long = LONG_KEYS.has(fieldKey) || text.length > 90 || text.includes('\n');
   const id = useId();
   const hint = HINTS[fieldKey];
+  const fixed = fieldKey === 'slot' || fieldKey === 'slug';
 
   return (
     <div className={styles.field}>
@@ -159,6 +167,7 @@ function StringField({ fieldKey, value, onChange }: NodeProps) {
           rows={Math.min(10, Math.max(3, Math.ceil(text.length / 80)))}
           onChange={(event) => onChange(event.target.value)}
           className={styles.textarea}
+          readOnly={fixed}
         />
       ) : (
         <input
@@ -167,6 +176,7 @@ function StringField({ fieldKey, value, onChange }: NodeProps) {
           value={text}
           onChange={(event) => onChange(event.target.value)}
           className={styles.input}
+          readOnly={fixed}
         />
       )}
       {hint && <p className={styles.hint}>{hint}</p>}
@@ -216,9 +226,10 @@ function BooleanField({ fieldKey, value, onChange }: NodeProps) {
   );
 }
 
-function ListField({ fieldKey, value, onChange, depth }: NodeProps) {
+function ListField({ fieldKey, value, sample, onChange, depth }: NodeProps) {
   const items = Array.isArray(value) ? value : [];
-  const ofStrings = items.length === 0 || typeof items[0] === 'string';
+  const sampleItems = Array.isArray(sample) ? sample : [];
+  const ofStrings = typeof (items[0] ?? sampleItems[0] ?? '') === 'string';
 
   const replace = (index: number, next: unknown) => {
     const copy = [...items];
@@ -239,7 +250,7 @@ function ListField({ fieldKey, value, onChange, depth }: NodeProps) {
   };
 
   const add = () => {
-    const template = items.length > 0 ? blankLike(items[items.length - 1]) : '';
+    const template = blankLike(items[items.length - 1] ?? sampleItems[0] ?? '');
     onChange([...items, template]);
   };
 
@@ -325,6 +336,7 @@ function ListField({ fieldKey, value, onChange, depth }: NodeProps) {
               <ValueEditor
                 fieldKey={fieldKey}
                 value={item}
+                sample={sampleItems[0]}
                 depth={depth + 1}
                 onChange={(next) => replace(index, next)}
                 hideLegend
@@ -344,11 +356,13 @@ function ListField({ fieldKey, value, onChange, depth }: NodeProps) {
 function ObjectField({
   fieldKey,
   value,
+  sample,
   onChange,
   depth,
   hideLegend,
 }: NodeProps & { hideLegend?: boolean }) {
   const record = (value ?? {}) as Record<string, unknown>;
+  const sampleRecord = (sample ?? {}) as Record<string, unknown>;
 
   const body = (
     <div className={styles.groupBody}>
@@ -357,6 +371,7 @@ function ObjectField({
           key={key}
           fieldKey={key}
           value={child}
+          sample={sampleRecord[key]}
           depth={depth + 1}
           onChange={(next) => onChange({ ...record, [key]: next })}
         />
@@ -424,20 +439,27 @@ export function ContentEditor({
     { kind: 'idle' | 'saved' | 'error'; message: string }
   >({ kind: 'idle', message: '' });
   const [pending, startTransition] = useTransition();
+  const revision = useRef(0);
 
   const update = (next: unknown) => {
+    revision.current += 1;
     setValue(next);
     setDirty(true);
     setStatus({ kind: 'idle', message: '' });
   };
 
   const save = () => {
+    const savingRevision = revision.current;
     startTransition(async () => {
       const result = await saveSection(section, value);
 
       if (result.ok) {
-        setDirty(false);
-        setStatus({ kind: 'saved', message: 'Saved — the site is updated.' });
+        if (revision.current === savingRevision) {
+          setDirty(false);
+          setStatus({ kind: 'saved', message: 'Saved — the site is updated.' });
+        } else {
+          setStatus({ kind: 'idle', message: 'Newer changes are unsaved.' });
+        }
       } else {
         setStatus({ kind: 'error', message: result.error });
       }
@@ -445,6 +467,7 @@ export function ContentEditor({
   };
 
   const restore = () => {
+    revision.current += 1;
     setValue(structuredClone(defaultValue));
     setDirty(true);
     setStatus({
@@ -454,13 +477,20 @@ export function ContentEditor({
   };
 
   const clearOverride = () => {
+    if (!window.confirm('Reset this entire section to the original copy?')) return;
+    const resettingRevision = revision.current;
     startTransition(async () => {
       const result = await resetSection(section);
 
       if (result.ok) {
-        setValue(structuredClone(defaultValue));
-        setDirty(false);
-        setStatus({ kind: 'saved', message: 'Reset to the shipped copy.' });
+        if (revision.current === resettingRevision) {
+          revision.current += 1;
+          setValue(structuredClone(defaultValue));
+          setDirty(false);
+          setStatus({ kind: 'saved', message: 'Reset to the shipped copy.' });
+        } else {
+          setStatus({ kind: 'idle', message: 'Newer changes are unsaved.' });
+        }
       } else {
         setStatus({ kind: 'error', message: result.error });
       }
@@ -481,12 +511,18 @@ export function ContentEditor({
           {status.message ||
             (dirty ? 'Unsaved changes' : 'Everything is saved.')}
         </p>
-        <button type="button" onClick={restore} className={styles.secondary}>
+        <button
+          type="button"
+          onClick={restore}
+          disabled={pending}
+          className={styles.secondary}
+        >
           Load original
         </button>
         <button
           type="button"
           onClick={clearOverride}
+          disabled={pending}
           className={styles.secondary}
         >
           Reset section
@@ -504,6 +540,7 @@ export function ContentEditor({
       <ValueEditor
         fieldKey={section}
         value={value}
+        sample={defaultValue}
         depth={0}
         onChange={update}
         hideLegend

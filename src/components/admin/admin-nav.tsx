@@ -21,6 +21,7 @@ export function AdminNav({
   const pathname = usePathname();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
 
   const link = (href: string, label: string) => (
     <Link
@@ -36,9 +37,16 @@ export function AdminNav({
 
   async function signOut() {
     setSigningOut(true);
-    await fetch('/api/admin/session', { method: 'DELETE' });
-    router.replace('/admin/login');
-    router.refresh();
+    setSignOutError('');
+    try {
+      const response = await fetch('/api/admin/session', { method: 'DELETE' });
+      if (!response.ok) throw new Error('Sign out failed');
+      router.replace('/admin/login');
+      router.refresh();
+    } catch {
+      setSignOutError('Could not sign out. Please try again.');
+      setSigningOut(false);
+    }
   }
 
   return (
@@ -75,6 +83,7 @@ export function AdminNav({
 
       <div className={styles.sidebarFoot}>
         <p>{email}</p>
+        {signOutError && <p role="alert" className={styles.sidebarError}>{signOutError}</p>}
         <button
           type="button"
           onClick={signOut}

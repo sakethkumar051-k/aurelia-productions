@@ -1,10 +1,12 @@
 import Link from 'next/link';
 
 import { SECTION_META } from '@/content/sections';
+import { getImage } from '@/content/images';
 import { requireAdmin } from '@/lib/auth';
 import { isCloudinaryServerConfigured } from '@/lib/cloudinary-server';
 import { getContentFresh } from '@/lib/content';
 import { isFirebaseConfigured } from '@/lib/firebase/admin';
+import { mediaSlots } from '@/lib/media-slots';
 
 import styles from './admin.module.css';
 
@@ -12,7 +14,8 @@ export default async function AdminDashboard() {
   const admin = await requireAdmin();
   const content = await getContentFresh();
 
-  const photoSlots = Object.keys(content.media).length;
+  const slots = mediaSlots(content);
+  const photoSlots = slots.filter((slot) => content.media[slot.slot] || getImage(slot.slot)).length;
 
   return (
     <>
@@ -34,11 +37,12 @@ export default async function AdminDashboard() {
         </div>
       )}
 
-      {!isCloudinaryServerConfigured() && (
+      {(!isCloudinaryServerConfigured() || !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) && (
         <div className={`${styles.notice} ${styles.noticeInfo}`}>
           Cloudinary is not configured yet, so photo uploads are unavailable.
           Add <code>CLOUDINARY_CLOUD_NAME</code>, <code>CLOUDINARY_API_KEY</code>{' '}
-          and <code>CLOUDINARY_API_SECRET</code> to enable them.
+          and <code>CLOUDINARY_API_SECRET</code>, plus the public cloud name,
+          to enable them.
         </div>
       )}
 
@@ -48,7 +52,7 @@ export default async function AdminDashboard() {
           <p className={styles.cardBody}>
             Upload and replace the images in every frame across the site.
           </p>
-          <p className={styles.cardMeta}>{photoSlots} filled</p>
+          <p className={styles.cardMeta}>{photoSlots} of {slots.length} filled</p>
         </Link>
 
         <Link href="/admin/enquiries" className={styles.card}>

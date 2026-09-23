@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath, updateTag } from 'next/cache';
+import { FieldPath, FieldValue } from 'firebase-admin/firestore';
 
 import { defaultContent } from '@/content/defaults';
 import {
@@ -10,8 +11,9 @@ import {
   mediaAssetSchema,
 } from '@/content/schema';
 import { requireAdmin } from '@/lib/auth';
-import { CONTENT_COLLECTION, CONTENT_TAG } from '@/lib/content';
+import { CONTENT_COLLECTION, CONTENT_TAG, getContentFresh } from '@/lib/content';
 import { firestore } from '@/lib/firebase/admin';
+import { mediaSlots } from '@/lib/media-slots';
 import { signUploadParams } from '@/lib/cloudinary-server';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -51,6 +53,18 @@ export async function saveSection(
     const first = parsed.error.issues[0];
     const where = first?.path.join(' → ') || 'this section';
     return { ok: false, error: `${where}: ${first?.message ?? 'invalid value'}` };
+  }
+
+  if (section === 'portfolio') {
+    const slots = (parsed.data as { items: { slot: string }[] }).items.map(
+      (item) => item.slot,
+    );
+    if (slots.some((slot) => !slot.trim()) || new Set(slots).size !== slots.length) {
+      return {
+        ok: false,
+        error: 'Every portfolio photo needs a unique image key.',
+      };
+    }
   }
 
   const db = firestore();
@@ -124,6 +138,13 @@ export async function saveMediaAsset(
     return { ok: false, error: 'That upload came back in an unexpected shape.' };
   }
 
+  if (!mediaSlots(await getContentFresh()).some((item) => item.slot === slot)) {
+    return {
+      ok: false,
+      error: 'That photo position is no longer on the site. Refresh this page.',
+    };
+  }
+
   const db = firestore();
   if (!db) {
     return { ok: false, error: 'Firebase is not configured on the server.' };
@@ -151,17 +172,23 @@ export async function saveMediaAsset(
 export async function removeMediaAsset(slot: string): Promise<ActionResult> {
   await requireAdmin();
 
+  if (!mediaSlots(await getContentFresh()).some((item) => item.slot === slot)) {
+    return {
+      ok: false,
+      error: 'That photo position is no longer on the site. Refresh this page.',
+    };
+  }
+
   const db = firestore();
   if (!db) {
     return { ok: false, error: 'Firebase is not configured on the server.' };
   }
 
   try {
-    const doc = db.collection(CONTENT_COLLECTION).doc('media');
-    const snapshot = await doc.get();
-    const data = (snapshot.data() ?? {}) as Record<string, unknown>;
-    delete data[slot];
-    await doc.set(data);
+    await db
+      .collection(CONTENT_COLLECTION)
+      .doc('media')
+      .update(new FieldPath(slot), FieldValue.delete());
   } catch (error) {
     console.error('[admin] media removal failed:', error);
     return { ok: false, error: 'Could not remove that image. Please retry.' };

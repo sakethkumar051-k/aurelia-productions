@@ -56,7 +56,9 @@ export function LoginForm() {
       // Firebase's own session is no longer needed — the cookie is the record.
       await auth.signOut();
 
-      router.replace(params.get('next') ?? '/admin');
+      // Only same-origin paths are safe here; anything else is an open redirect.
+      const next = params.get('next') ?? '';
+      router.replace(next.startsWith('/') && !next.startsWith('//') ? next : '/admin');
       router.refresh();
     } catch (caught) {
       const code =

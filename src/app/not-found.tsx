@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { Emphasis } from '@/components/emphasis';
 import { LotusDivider } from '@/components/lotus-divider';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
@@ -17,25 +18,24 @@ export default async function NotFound() {
   return (
     <>
       <div aria-hidden="true" className="grain" />
-      <SiteHeader ctaLabel={content.header.cta} />
+      <SiteHeader content={content} />
       <main id="main">
         <section aria-labelledby="nf-h" className={styles.wrap}>
           <div className={styles.inner}>
-            <p className={styles.eyebrow}>404 · Page not found</p>
+            <p className={styles.eyebrow}>{content.notFound.eyebrow}</p>
             <h1 id="nf-h" className={styles.title}>
-              This page has <span className="em">wrapped up</span>
+              <Emphasis text={content.notFound.title} />
             </h1>
             <LotusDivider className={styles.divider} />
             <p className={styles.body}>
-              The link you followed no longer leads anywhere. The work, the
-              pillars and the enquiry form are all still where you left them.
+              {content.notFound.body}
             </p>
             <div className={styles.actions}>
               <Link href="/" className="btn btnLg btnGold">
-                Back to Home
+                {content.notFound.homeCta}
               </Link>
               <Link href="/contact" className="btn btnLg btnGhost">
-                Talk to Us
+                {content.notFound.contactCta}
               </Link>
             </div>
           </div>

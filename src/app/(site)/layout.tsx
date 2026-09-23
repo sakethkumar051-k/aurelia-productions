@@ -52,7 +52,7 @@ export default async function SiteLayout({
         Skip to content
       </a>
       <div aria-hidden="true" className="grain" />
-      <SiteHeader ctaLabel={content.header.cta} />
+      <SiteHeader content={content} />
       <main id="main">
         <RouteFade>{children}</RouteFade>
       </main>

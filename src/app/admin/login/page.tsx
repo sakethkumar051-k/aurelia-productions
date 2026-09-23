@@ -10,7 +10,12 @@ export default async function AdminLoginPage() {
   const admin = await currentAdmin();
   if (admin) redirect('/admin');
 
-  const configured = isFirebaseConfigured();
+  const configured = isFirebaseConfigured() && Boolean(
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+    process.env.ADMIN_EMAILS?.trim(),
+  );
 
   return (
     <div className={styles.login}>
@@ -24,8 +29,9 @@ export default async function AdminLoginPage() {
           <LoginForm />
         ) : (
           <div className={`${styles.notice} ${styles.noticeWarn}`}>
-            Firebase is not configured on this server yet, so sign-in is
-            unavailable. Add the Firebase environment variables and restart.
+            Admin sign-in is not fully configured on this deployment. Add the
+            Firebase server and browser settings and the editor email allowlist,
+            then redeploy.
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 import type { Content } from './schema';
 import { SERVICES } from './services';
-import { PORTFOLIO } from './portfolio';
+import { PORTFOLIO, portfolioSlot } from './portfolio';
 import {
   BUDGETS,
   EVENT_TYPES,
@@ -28,6 +28,8 @@ export const defaultContent: Content = {
   brand: {
     name: SITE.name,
     shortName: SITE.shortName,
+    logoLine1: 'Aurevia',
+    logoLine2: 'Productions',
     tagline: SITE.tagline,
     motto: SITE.motto,
     description: SITE.description,
@@ -49,7 +51,18 @@ export const defaultContent: Content = {
     founded: SITE.founded,
   },
 
-  header: { cta: 'DM for Booking' },
+  header: {
+    cta: 'DM for Booking',
+    menuLabel: 'Menu',
+    links: {
+      home: 'Home',
+      about: 'About',
+      services: 'Services',
+      festive: 'Festive Decor',
+      portfolio: 'Portfolio',
+      contact: 'Contact',
+    },
+  },
 
   footer: {
     trustStrip: [...TRUST_STRIP],
@@ -229,7 +242,16 @@ export const defaultContent: Content = {
       title: 'Moments that *lasted*',
       body: 'Filter by craft. Tap any frame to open it larger.',
     },
-    items: PORTFOLIO.map((item) => ({ ...item })),
+    allLabel: 'All',
+    items: PORTFOLIO.map((item) => ({ ...item, slot: portfolioSlot(item.title) })),
+  },
+
+  notFound: {
+    eyebrow: '404 · Page not found',
+    title: 'This page has *wrapped up*',
+    body: 'The link you followed no longer leads anywhere. The work, the pillars and the enquiry form are all still where you left them.',
+    homeCta: 'Back to Home',
+    contactCta: 'Talk to Us',
   },
 
   contactPage: {

@@ -70,6 +70,13 @@ export const SECTION_META: SectionMeta[] = [
     preview: '/contact',
   },
   {
+    key: 'notFound',
+    label: 'Page not found',
+    description: 'The message and buttons shown when a visitor opens a missing page.',
+    group: 'Pages',
+    preview: '/aurevia-page-preview-not-found',
+  },
+  {
     key: 'services',
     label: 'The five pillars',
     description:
@@ -80,7 +87,7 @@ export const SECTION_META: SectionMeta[] = [
   {
     key: 'brand',
     label: 'Brand',
-    description: 'Name, tagline, motto and the description search engines read.',
+    description: 'Name, logo lettering, tagline, motto and the description search engines read.',
     group: 'Site-wide',
   },
   {
@@ -93,7 +100,7 @@ export const SECTION_META: SectionMeta[] = [
   {
     key: 'header',
     label: 'Header',
-    description: 'The booking button label in the navigation bar.',
+    description: 'Navigation labels, the mobile menu label and the booking button.',
     group: 'Site-wide',
   },
   {

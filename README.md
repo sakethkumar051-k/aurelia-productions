@@ -117,8 +117,11 @@ Six small corrections, all to defects that would ship as bugs:
 
 ## The admin panel
 
-`/admin`, signed in with Firebase Auth. It edits **579 fields** across twelve sections —
-every heading, eyebrow, button label, list item, package bullet and FAQ on the site.
+For the live handover and exact production setup steps, see [HANDOVER.md](./HANDOVER.md).
+
+`/admin`, signed in with Firebase Auth. It edits hundreds of fields across the
+public pages and site-wide sections — headings, navigation labels, logo wording,
+button labels, list items, package bullets and FAQs.
 
 **How content flows.** Firestore holds *partial overrides* of the tree in `content/<section>`
 documents, deep-merged onto `src/content/defaults.ts` at read time. Consequences worth knowing:
@@ -140,7 +143,7 @@ Two conventions an editor should know, both surfaced as hints in the panel:
 - Section headings use `*asterisks*` for the italic gold emphasis — `Five pillars, one *atelier*`.
 - Button labels use `{tier}` and `{name}` placeholders — `Enquire · {tier}`.
 
-**Photographs.** `/admin/media` lists all 52 photo frames on the site, derived from the content
+**Photographs.** `/admin/media` lists photo frames on the site, derived from the content
 tree, each showing its art-direction brief. Uploads are signed server-side and go straight from
 the browser to Cloudinary; only the public id and dimensions come back to Firestore. Frames with
 no photograph render the placeholder carrying the brief.
@@ -175,4 +178,4 @@ covers the photography. Nothing here needs a billing account.
 - **Rate limiting** — the enquiry throttle is per-instance and resets on cold start. Fine for one
   server; needs a shared store if the site is ever deployed to several regions.
 - **`NEXT_PUBLIC_SITE_URL`** — set per environment so canonicals, Open Graph and the sitemap
-  point at the real domain (falls back to `https://aurevia.in`).
+  point at the real domain (falls back to `https://aurelia-productions.vercel.app`).
