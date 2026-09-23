@@ -40,9 +40,10 @@ export async function currentAdmin(): Promise<AdminUser | null> {
   // line would let Next prerender an admin page (and cache its logged-out
   // redirect) at build time.
   const cookie = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!cookie) return null;
 
   const auth = adminAuth();
-  if (!auth || !cookie) return null;
+  if (!auth) return null;
 
   try {
     // `true` also checks the token against revoked sessions.

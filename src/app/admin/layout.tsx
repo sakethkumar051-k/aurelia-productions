@@ -26,7 +26,8 @@ export default async function AdminLayout({
 }) {
   const admin = await currentAdmin();
 
-  // The login screen renders on its own — no shell, no navigation.
+  // An invalid or expired cookie can reach this layout; the child page will
+  // redirect after checking it, without briefly exposing the admin shell.
   if (!admin) return <>{children}</>;
 
   const groups = ['Pages', 'Collections', 'Site-wide'] as const;

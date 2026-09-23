@@ -8,7 +8,7 @@ import { clientAuth } from '@/lib/firebase/client';
 import adminStyles from '@/app/admin/admin.module.css';
 import styles from './content-editor.module.css';
 
-export function LoginForm({ nextPath }: { nextPath?: string }) {
+export function LoginForm() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +56,7 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
       await auth.signOut();
 
       // Only same-origin paths are safe here; anything else is an open redirect.
-      const next = nextPath ?? '';
+      const next = new URLSearchParams(window.location.search).get('next') ?? '';
       router.replace(next.startsWith('/') && !next.startsWith('//') ? next : '/admin');
       router.refresh();
     } catch (caught) {

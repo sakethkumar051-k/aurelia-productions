@@ -1,22 +1,21 @@
-import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 
 import { LoginForm } from '@/components/admin/login-form';
-import { currentAdmin } from '@/lib/auth';
-import { isFirebaseConfigured } from '@/lib/firebase/admin';
 
-import styles from '../admin.module.css';
+import styles from '@/app/admin/admin.module.css';
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string | string[] }>;
-}) {
-  const admin = await currentAdmin();
-  if (admin) redirect('/admin');
+export const metadata: Metadata = {
+  title: 'Admin sign in',
+  robots: { index: false, follow: false },
+};
 
-  const { next } = await searchParams;
-
-  const configured = isFirebaseConfigured() && Boolean(
+export default function AdminLoginPage() {
+  // Keep this route independent of the authenticated admin layout and the
+  // Firebase Admin SDK. It must render even when production keys are missing.
+  const configured = Boolean(
+    process.env.FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY &&
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
     process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
@@ -32,7 +31,7 @@ export default async function AdminLoginPage({
         </p>
 
         {configured ? (
-          <LoginForm nextPath={typeof next === 'string' ? next : undefined} />
+          <LoginForm />
         ) : (
           <div className={`${styles.notice} ${styles.noticeWarn}`}>
             Admin sign-in is not fully configured on this deployment. Add the
