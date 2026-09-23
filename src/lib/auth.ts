@@ -4,8 +4,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { adminAuth } from '@/lib/firebase/admin';
+import { SESSION_COOKIE } from '@/lib/session';
 
-export const SESSION_COOKIE = 'aurevia_admin';
+export { SESSION_COOKIE } from '@/lib/session';
 export const SESSION_MAX_AGE_MS = 5 * 24 * 60 * 60 * 1000; // 5 days
 
 export type AdminUser = {
