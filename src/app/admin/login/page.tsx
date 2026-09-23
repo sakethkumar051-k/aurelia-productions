@@ -6,9 +6,15 @@ import { isFirebaseConfigured } from '@/lib/firebase/admin';
 
 import styles from '../admin.module.css';
 
-export default async function AdminLoginPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
   const admin = await currentAdmin();
   if (admin) redirect('/admin');
+
+  const { next } = await searchParams;
 
   const configured = isFirebaseConfigured() && Boolean(
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
@@ -26,7 +32,7 @@ export default async function AdminLoginPage() {
         </p>
 
         {configured ? (
-          <LoginForm />
+          <LoginForm nextPath={typeof next === 'string' ? next : undefined} />
         ) : (
           <div className={`${styles.notice} ${styles.noticeWarn}`}>
             Admin sign-in is not fully configured on this deployment. Add the

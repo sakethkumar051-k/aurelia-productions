@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { clientAuth } from '@/lib/firebase/client';
@@ -8,9 +8,8 @@ import { clientAuth } from '@/lib/firebase/client';
 import adminStyles from '@/app/admin/admin.module.css';
 import styles from './content-editor.module.css';
 
-export function LoginForm() {
+export function LoginForm({ nextPath }: { nextPath?: string }) {
   const router = useRouter();
-  const params = useSearchParams();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -57,7 +56,7 @@ export function LoginForm() {
       await auth.signOut();
 
       // Only same-origin paths are safe here; anything else is an open redirect.
-      const next = params.get('next') ?? '';
+      const next = nextPath ?? '';
       router.replace(next.startsWith('/') && !next.startsWith('//') ? next : '/admin');
       router.refresh();
     } catch (caught) {
