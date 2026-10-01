@@ -18,6 +18,48 @@ import { signUploadParams } from '@/lib/cloudinary-server';
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
+/** Updates one visible line without replacing other fields in the section. */
+export async function saveVisibleText(
+  section: string,
+  path: (string | number)[],
+  value: string | number,
+): Promise<ActionResult> {
+  await requireAdmin();
+
+  if (!isSection(section) || section === 'media' ||
+      (typeof value !== 'string' && (typeof value !== 'number' || !Number.isFinite(value)))) {
+    return { ok: false, error: 'This text cannot be edited here.' };
+  }
+
+  if (!path.length || path.length > 8 || path.some((part) =>
+    typeof part === 'string'
+      ? !part || ['__proto__', 'constructor', 'prototype', 'slug', 'slot'].includes(part)
+      : !Number.isInteger(part) || part < 0
+  )) {
+    return { ok: false, error: 'This field is not editable.' };
+  }
+
+  const current = await getContentFresh();
+  const copy = structuredClone(current[section]) as unknown;
+  let parent: unknown = copy;
+
+  for (const part of path.slice(0, -1)) {
+    if (!parent || typeof parent !== 'object' || !(part in parent)) {
+      return { ok: false, error: 'This field has moved. Refresh and try again.' };
+    }
+    parent = (parent as Record<string | number, unknown>)[part];
+  }
+
+  const key = path[path.length - 1];
+  if (!parent || typeof parent !== 'object' || !(key in parent) ||
+      typeof (parent as Record<string | number, unknown>)[key] !== typeof value) {
+    return { ok: false, error: 'This field has moved. Refresh and try again.' };
+  }
+
+  (parent as Record<string | number, unknown>)[key] = value;
+  return saveSection(section, copy);
+}
+
 function isSection(value: string): value is ContentSection {
   return (CONTENT_SECTIONS as readonly string[]).includes(value);
 }

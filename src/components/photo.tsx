@@ -40,6 +40,7 @@ export function Photo({
       <Image
         loader={cloudinaryLoader}
         src={asset.publicId}
+        data-media-slot={slot}
         alt={label}
         fill
         sizes={sizes}
@@ -57,6 +58,7 @@ export function Photo({
     return (
       <Image
         src={bundled}
+        data-media-slot={slot}
         alt={label}
         fill
         sizes={sizes}
@@ -68,7 +70,7 @@ export function Photo({
   }
 
   return (
-    <div className={styles.placeholder} role="img" aria-label={alt}>
+    <div className={styles.placeholder} role="img" aria-label={alt} data-media-slot={slot}>
       <span aria-hidden="true" className={styles.placeholderMark}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M12 2.5c1.9 3.9 5.6 5.8 5.6 9.6a5.6 5.6 0 0 1-11.2 0c0-3.8 3.7-5.7 5.6-9.6Z" />

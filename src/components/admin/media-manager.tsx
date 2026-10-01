@@ -26,18 +26,20 @@ function thumbnail(publicId: string, cloudName: string): string {
   return `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto,w_480,c_fill,ar_3:2/${publicId}`;
 }
 
-function SlotCard({
+export function SlotCard({
   slot,
   asset,
   bundled,
   cloudName,
   uploadsEnabled,
+  onSaved,
 }: {
   slot: MediaSlot;
   asset?: MediaAsset;
   bundled?: string;
   cloudName: string;
   uploadsEnabled: boolean;
+  onSaved?: (asset?: MediaAsset) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [current, setCurrent] = useState<MediaAsset | undefined>(asset);
@@ -130,6 +132,7 @@ function SlotCard({
     setCurrent(next);
     setStatus('Updated on the site.');
     setProgress(-1);
+    onSaved?.(next);
   }
 
   async function remove() {
@@ -145,6 +148,7 @@ function SlotCard({
     }
 
     setCurrent(undefined);
+    onSaved?.();
     setStatus(
       bundled
         ? 'Removed — the original photo is showing again.'
