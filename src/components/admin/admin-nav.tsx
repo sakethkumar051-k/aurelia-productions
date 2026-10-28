@@ -66,7 +66,7 @@ export function AdminNav({
           <p className={styles.navLabel}>Overview</p>
           <div className={styles.navList}>
             {link('/studio', 'Visual editor')}
-            {link('/admin/media', 'Photographs')}
+            {link('/admin/media', 'Photos & logo')}
             {link('/admin/enquiries', 'Enquiries')}
           </div>
         </div>

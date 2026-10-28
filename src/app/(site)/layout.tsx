@@ -22,24 +22,24 @@ export default async function SiteLayout({
     description: brand.description,
     slogan: brand.motto,
     email: contact.email,
-    telephone: contact.phone,
+    telephone: contact.phone || undefined,
     foundingDate: contact.founded,
     priceRange: '₹₹',
     url: siteUrl(),
-    address: {
+    address: contact.street ? {
       '@type': 'PostalAddress',
       streetAddress: contact.street,
       addressLocality: contact.locality,
       addressRegion: contact.region,
       postalCode: contact.postalCode,
       addressCountry: contact.country,
-    },
+    } : undefined,
     areaServed: [
       { '@type': 'Country', name: 'India' },
-      { '@type': 'City', name: contact.locality },
+      ...(contact.locality ? [{ '@type': 'City', name: contact.locality }] : []),
     ],
     openingHours: 'Mo-Sa 10:00-20:00',
-    sameAs: [contact.instagram],
+    sameAs: contact.instagram ? [contact.instagram] : [],
   };
 
   return (

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { Photo } from '@/components/photo';
 import type { Content } from '@/content/schema';
 import { siteNavigation } from '@/lib/navigation';
 
@@ -23,8 +24,9 @@ export function SiteFooter({ content }: { content: Content }) {
 
       <div className={styles.columns}>
         <div>
-          <p className={styles.brandName}>{brand.logoLine1}</p>
-          <p className={styles.brandSub}>{brand.logoLine2}</p>
+          <Link href="/" aria-label={`${brand.name} — home`} className={styles.brandLogo}>
+            <Photo slot="brand-logo" asset={content.media['brand-logo']} alt={brand.name} fit="contain" sizes="220px" />
+          </Link>
           <p className={styles.brandScript}>{footer.script}</p>
           <p className={styles.brandBlurb}>{footer.blurb}</p>
         </div>
@@ -65,11 +67,11 @@ export function SiteFooter({ content }: { content: Content }) {
               {contact.email}
             </a>
           </p>
-          <p className={styles.contactLine}>
+          {contact.phone && contact.phoneHref && <p className={styles.contactLine}>
             <a href={`tel:${contact.phoneHref}`} className={styles.colLink}>
               {contact.phone}
             </a>
-          </p>
+          </p>}
           <p className={styles.contactLineLast}>{contact.cities}</p>
           <Link href="/contact" className={styles.footerCta}>
             {footer.cta}

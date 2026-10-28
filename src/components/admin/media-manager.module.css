@@ -153,3 +153,5 @@
   background: var(--gold);
   transition: width 0.2s ease;
 }
+
+.frame[data-logo='true'] img { object-fit: contain; padding: 18px; }

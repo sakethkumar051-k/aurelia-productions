@@ -2,47 +2,22 @@
 
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: min(900px, 100svh);
   display: flex;
   align-items: center;
   overflow: hidden;
   background: var(--ivory);
 }
 
-.heroLayer {
-  position: absolute;
-  inset: -12% -2%;
-  background: var(--ivory);
-  will-change: transform;
-}
-
-.heroRingLarge {
-  position: absolute;
-  top: 14%;
-  right: 9%;
-  width: 230px;
-  height: 230px;
-  border: 1px solid rgba(201, 164, 76, 0.34);
-  border-radius: 50%;
-  animation: drift 11s ease-in-out infinite;
-}
-
-.heroRingSmall {
-  position: absolute;
-  bottom: 12%;
-  left: 6%;
-  width: 130px;
-  height: 130px;
-  border: 1px solid rgba(227, 199, 123, 0.2);
-  border-radius: 50%;
-  animation: drift 14s ease-in-out infinite;
-}
-
 .heroInner {
   position: relative;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 150px var(--gutter) 110px;
+  padding: 160px var(--gutter) 80px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 76px);
   width: 100%;
 }
 
@@ -56,7 +31,7 @@
   gap: 14px;
   margin-bottom: 30px;
   font-size: 10.5px;
-  letter-spacing: 0.42em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold-deep);
 }
@@ -73,7 +48,7 @@
 .heroTitle {
   font-family: var(--font-display), serif;
   font-weight: 300;
-  font-size: clamp(52px, 8.4vw, 124px);
+  font-size: clamp(52px, 6.7vw, 96px);
   line-height: 0.94;
   letter-spacing: 0.02em;
   color: var(--maroon);
@@ -598,4 +573,36 @@
   flex-wrap: wrap;
   gap: 14px;
   justify-content: center;
+}
+
+/* The hero pairs the wordmark with a useful, navigable index of our craft. */
+.heroAtelier { min-width: 0; border: 1px solid rgba(201,164,76,.48); padding: 10px; background: var(--ivory-card); }
+.heroArtwork { position: relative; min-height: 220px; aspect-ratio: 1.6; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; background: var(--maroon); color: var(--gold-light); }
+.heroMonogram { font: italic 300 150px/.85 var(--font-display), serif; color: var(--gold-light); }
+.heroMotto { max-width: 240px; margin-top: 20px; font: 300 18px/1.5 var(--font-display), serif; text-align: center; letter-spacing: .04em; }
+.heroCraft { padding: 22px 20px 12px; }
+.heroCraftLabel { color: var(--gold-deep); text-transform: uppercase; letter-spacing: .22em; font-size: 10px; margin-bottom: 12px; }
+.heroServiceList { list-style: none; margin: 0; padding: 0; }
+.heroServiceList li { border-top: 1px solid rgba(201,164,76,.3); }
+.heroServiceList a { display: grid; grid-template-columns: 24px 1fr 18px; align-items: center; gap: 12px; padding: 11px 0; color: var(--maroon); font: 400 20px/1.25 var(--font-display), serif; }
+.heroServiceList a:hover { color: var(--gold-deep); }
+.heroServiceNumber { font: 400 9px/1 var(--font-ui), sans-serif; letter-spacing: .08em; color: var(--gold-deep); }
+@media (max-width: 900px) {
+  .heroInner { grid-template-columns: 1fr; padding-top: 148px; padding-bottom: 64px; gap: 46px; }
+  .heroTitle { font-size: clamp(56px, 10vw, 88px); }
+  .heroAtelier { display: grid; grid-template-columns: 1fr 1.2fr; }
+  .heroArtwork { height: 100%; aspect-ratio: auto; }
+  .heroCraft { padding: 16px 20px; }
+  .heroEyebrow { line-height: 1.8; }
+}
+@media (max-width: 540px) {
+  .heroEyebrow { font-size: 9px; letter-spacing: .16em; gap: 12px; }
+  .heroRule { width: 24px; }
+  .heroActions { display: grid; grid-template-columns: 1fr; margin-top: 30px; }
+  .heroActions a { text-align: center; justify-content: center; }
+  .heroAtelier { grid-template-columns: 1fr; }
+  .heroArtwork { aspect-ratio: 1.75; min-height: 190px; }
+  .heroTitle { font-size: clamp(44px, 12vw, 64px); }
+  .heroBody { font-size: 15px; }
+  .heroScript { font-size: 30px; }
 }

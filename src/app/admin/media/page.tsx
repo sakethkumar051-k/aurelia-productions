@@ -35,12 +35,11 @@ export default async function MediaPage() {
           <p className={styles.pageEyebrow}>
             {filled} of {slots.length} frames filled
           </p>
-          <h1 className={styles.pageTitle}>Photographs</h1>
+          <h1 className={styles.pageTitle}>Photos & logo</h1>
           <p className={styles.pageHint}>
-            Each card is one frame on the site. Where no photograph has been
-            uploaded, the site shows a placeholder describing the shot that
-            belongs there. Uploads go straight to Cloudinary and appear on the
-            site as soon as they finish.
+            Upload your brand logo or a photo, then drag and zoom to crop it before
+            saving. Choose Crop to adjust any existing image. Originals stay intact,
+            and saved changes appear across the website.
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { Content } from '@/content/schema';
+import { Photo } from '@/components/photo';
 import { siteNavigation } from '@/lib/navigation';
 
 import styles from './site-header.module.css';
@@ -14,8 +15,8 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader({ content }: { content: Pick<Content, 'brand' | 'header'> }) {
-  const { brand, header } = content;
+export function SiteHeader({ content }: { content: Pick<Content, 'brand' | 'header' | 'media'> }) {
+  const { brand, header, media } = content;
   const nav = siteNavigation(header);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -57,12 +58,8 @@ export function SiteHeader({ content }: { content: Pick<Content, 'brand' | 'head
           className={styles.brand}
           aria-label={`${brand.name} — home`}
         >
-          <span aria-hidden="true" className={styles.brandMark}>
-            {brand.logoLine1.charAt(0)}
-          </span>
-          <span className={styles.brandText}>
-            <span className={styles.brandName}>{brand.logoLine1}</span>
-            <span className={styles.brandSub}>{brand.logoLine2}</span>
+          <span className={styles.brandLogo}>
+            <Photo slot="brand-logo" asset={media['brand-logo']} alt={brand.name} fit="contain" sizes="190px" priority />
           </span>
         </Link>
 

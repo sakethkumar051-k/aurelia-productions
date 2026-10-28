@@ -198,7 +198,7 @@ export async function saveMediaAsset(
       .doc('media')
       .set(
         { [slot]: { ...parsed.data, updatedAt: new Date().toISOString() } },
-        { merge: true },
+        { mergeFields: [new FieldPath(slot)] },
       );
   } catch (error) {
     console.error('[admin] media save failed:', error);

@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import type { MediaAsset } from '@/content/schema';
 import { getImage } from '@/content/images';
-import { blurUrl, cloudinaryLoader, isCloudinaryConfigured } from '@/lib/cloudinary';
+import { assetSource, blurUrl, cloudinaryLoader, isCloudinaryConfigured } from '@/lib/cloudinary';
 
 import styles from './photo.module.css';
 
@@ -39,14 +39,14 @@ export function Photo({
     return (
       <Image
         loader={cloudinaryLoader}
-        src={asset.publicId}
+        src={assetSource(asset)}
         data-media-slot={slot}
         alt={label}
         fill
         sizes={sizes}
         priority={priority}
         placeholder="blur"
-        blurDataURL={blurUrl(asset.publicId)}
+        blurDataURL={blurUrl(assetSource(asset))}
         className={className}
       />
     );

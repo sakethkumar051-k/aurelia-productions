@@ -288,12 +288,12 @@ export const defaultContent: Content = {
     thanks: {
       script: 'Thank you',
       title: 'Your enquiry is with us',
-      body: 'We reply within 48 hours with a mood board and a costed plan. For urgent dates, WhatsApp us directly.',
+      body: 'We reply within 48 hours with a mood board and a costed plan. For urgent dates, email our team directly.',
       cta: 'Send another',
     },
     reach: {
-      eyebrow: 'Faster than email',
-      title: 'WhatsApp & DM',
+      eyebrow: 'Let’s talk',
+      title: 'Plan with Aurevia',
       body: 'Send the date, city and a reference photo. We revert with availability the same day.',
       cta: { primary: 'WhatsApp Us', secondary: 'DM on Instagram' },
     },

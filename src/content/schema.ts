@@ -130,11 +130,20 @@ export const ganeshTierSchema = z.object({
 
 export const mediaAssetSchema = z.object({
   publicId: text,
-  width: z.number(),
-  height: z.number(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  crop: z.object({
+    x: z.number().int().nonnegative(),
+    y: z.number().int().nonnegative(),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+  }).optional(),
   alt: text.optional(),
   updatedAt: text.optional(),
-});
+}).refine((asset) => !asset.crop || (
+  asset.crop.x + asset.crop.width <= asset.width &&
+  asset.crop.y + asset.crop.height <= asset.height
+), { message: "The crop must stay inside the original image.", path: ["crop"] });
 
 /* Pages ------------------------------------------------------------------ */
 

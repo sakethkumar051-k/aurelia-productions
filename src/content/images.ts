@@ -26,6 +26,7 @@ import aboutStory from '../../public/images/about-story.webp';
  */
 export const IMAGES: Record<string, StaticImageData> = {
   'about-story': aboutStory,
+  'brand-logo': aboutStory,
 };
 
 export function getImage(slot: string): StaticImageData | undefined {

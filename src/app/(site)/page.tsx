@@ -21,19 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const content = await getContent();
-  const { home, media } = content;
+  const { home, media, brand } = content;
 
   return (
     <>
       <section aria-labelledby="hero-h" className={styles.hero}>
-        <div
-          aria-hidden="true"
-          data-parallax="0.18"
-          className={styles.heroLayer}
-        />
-        <div aria-hidden="true" className={styles.heroRingLarge} />
-        <div aria-hidden="true" className={styles.heroRingSmall} />
-
         <div className={styles.heroInner}>
           <div data-stagger className={styles.heroCopy}>
             <p data-reveal="y" className={styles.heroEyebrow}>
@@ -65,6 +57,23 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
+          <aside className={styles.heroAtelier} aria-label="Explore our craft">
+            <div className={styles.heroArtwork} data-media-slot="home-hero">
+              {media['home-hero'] ? (
+                <Photo slot="home-hero" asset={media['home-hero']} alt="A signature Aurevia celebration" sizes="(max-width: 900px) 100vw, 420px" priority />
+              ) : (
+                <><span aria-hidden="true" className={styles.heroMonogram}>A</span><p className={styles.heroMotto}>{brand.motto}</p></>
+              )}
+            </div>
+            <div className={styles.heroCraft}>
+              <p className={styles.heroCraftLabel}>{home.pillars.eyebrow}</p>
+              <ol className={styles.heroServiceList}>
+                {content.services.map((service, index) => <li key={service.slug}>
+                  <Link href={`/services/${service.slug}`}><span className={styles.heroServiceNumber}>{String(index + 1).padStart(2, '0')}</span><span>{service.short}</span><span aria-hidden="true">↗</span></Link>
+                </li>)}
+              </ol>
+            </div>
+          </aside>
         </div>
 
         <div aria-hidden="true" className={styles.heroEdge} />

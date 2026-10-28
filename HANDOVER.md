@@ -19,6 +19,12 @@ The public website can render its original content without external services. Ed
 
 If the live `/admin/login` shows an error, check the Vercel function logs and the server Firebase variables first. The app now handles a malformed service account by showing a setup message, so a newly deployed build should no longer return a blank 500 solely because the key is invalid.
 
+## Image cropping and logo updates
+
+Open **Photos & logo** in `/admin/media`. The Brand group contains the logo used in both the header and footer. Upload a transparent PNG or WebP where possible; logos default to the full image so lettering is not clipped. The home hero also accepts an optional signature image.
+
+All image uploads open a crop preview before publishing. Drag or use the arrow keys to frame an image, choose a shape and adjust zoom, then save. **Crop** reopens an existing upload using its original pixels. **Full original** clears the saved crop; originals are never overwritten. Cancelling leaves the published image unchanged. The same controls are available when selecting an image in `/studio`.
+
 ## Editor's daily workflow
 
 - **Visual editor:** `/studio` displays the actual public website inside an editor frame. Choose a page, click visible text or a photograph, edit it, and save. Use **Browse** mode to follow links without selecting elements. This is the quickest way to make ordinary page edits.
@@ -40,7 +46,7 @@ Editors should leave the read-only photo keys and service URL keys alone. Headin
 
 ## Known content to confirm with the owner
 
-The shipped phone, email, WhatsApp, Instagram and address are placeholders. The client will replace them through **Contact details** before sharing the public site. Check the phone link and WhatsApp link as well as the displayed number. The map is a designed placeholder in the code and requires a map integration to become interactive. Email delivery for enquiries has not been connected; the Firestore inbox is the durable record.
+The business email is theaureviaproductions@gmail.com. Phone, WhatsApp, Instagram and studio address are blank until the administrator adds them. The client will replace them through **Contact details** before sharing the public site. Check the phone link and WhatsApp link as well as the displayed number. The map is a designed placeholder in the code and requires a map integration to become interactive. Email delivery for enquiries has not been connected; the Firestore inbox is the durable record.
 
 ## Custom domain cutover (once purchased)
 

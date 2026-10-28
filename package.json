@@ -1,12 +1,13 @@
 {
-  "name": "aurelia-productions",
+  "name": "aurevia-productions",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "cloudinary": "^2.10.0",
@@ -15,6 +16,7 @@
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-easy-crop": "^6.2.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {

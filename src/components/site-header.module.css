@@ -295,3 +295,7 @@
     display: grid;
   }
 }
+
+.brandLogo { position: relative; display: block; width: 180px; height: 82px; flex: none; }
+:global(html[data-scrolled='true']) .brandLogo { height: 58px; }
+@media (max-width: 540px) { .brandLogo { width: 150px; height: 64px; } }

@@ -18,6 +18,8 @@ export type MediaSlot = {
  */
 export function mediaSlots(content: Content): MediaSlot[] {
   const slots: MediaSlot[] = [
+    { slot: 'brand-logo', label: 'Brand logo', group: 'Brand', brief: 'Your logo in the header and footer. Use a transparent PNG or WebP for the cleanest result.' },
+    { slot: 'home-hero', label: 'Home — hero photograph', group: 'Home', brief: 'A signature celebration, floral installation or event detail.' },
     {
       slot: 'about-story',
       label: 'About — story image',

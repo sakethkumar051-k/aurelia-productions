@@ -9,7 +9,7 @@ import styles from './contact.module.css';
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Tell us the date, the city and the dream. Aurevia replies within 48 hours with a mood board and a costed plan — or WhatsApp us for same-day availability.',
+    'Tell us the date, the city and the dream. Aurevia replies within 48 hours with a mood board and a costed plan — or email our team for availability.',
   alternates: { canonical: '/contact' },
 };
 
@@ -45,53 +45,42 @@ export default async function ContactPage() {
               <p className={styles.reachBody}>{contactPage.reach.body}</p>
               <div className={styles.reachActions}>
                 <a
-                  href={contact.whatsapp}
+                  href={contact.whatsapp || `mailto:${contact.email}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.reachPrimary}
                 >
-                  {contactPage.reach.cta.primary}
+                  {contact.whatsapp ? contactPage.reach.cta.primary : 'Email our team'}
                 </a>
-                <a
+                {contact.instagram && <a
                   href={contact.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.reachSecondary}
                 >
                   {contactPage.reach.cta.secondary}
-                </a>
+                </a>}
               </div>
             </div>
 
             <div data-reveal="y" className={styles.studioCard}>
               <p className={styles.studioLabel}>{contactPage.studioLabel}</p>
-              <p className={styles.studioLine}>{contact.street}</p>
-              <p className={styles.studioLine}>
-                {contact.locality}, {contact.region} {contact.postalCode}
-              </p>
+              {contact.street && <p className={styles.studioLine}>{contact.street}</p>}
+              {(contact.locality || contact.region) && <p className={styles.studioLine}>
+                {[contact.locality, contact.region, contact.postalCode].filter(Boolean).join(', ')}
+              </p>}
               <p className={styles.studioLine}>
                 <a href={`mailto:${contact.email}`} className={styles.studioLink}>
                   {contact.email}
-                </a>{' '}
-                ·{' '}
-                <a href={`tel:${contact.phoneHref}`} className={styles.studioLink}>
-                  {contact.phone}
                 </a>
+                {contact.phone && contact.phoneHref && <> · <a href={`tel:${contact.phoneHref}`} className={styles.studioLink}>{contact.phone}</a></>}
               </p>
               <p className={styles.studioHours}>{contact.hours}</p>
             </div>
 
-            <div
-              data-reveal="y"
-              role="img"
-              aria-label={`Map placeholder showing the studio location in ${contact.locality}`}
-              className={styles.map}
-            >
-              <div aria-hidden="true" className={styles.mapPin} />
-              <div aria-hidden="true" className={styles.mapCaption}>
-                {contactPage.mapCaption}
-              </div>
-            </div>
+            {contact.street && <a data-reveal="y" className={styles.studioLink}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([contact.street, contact.locality, contact.region, contact.postalCode].filter(Boolean).join(', '))}`}
+              target="_blank" rel="noopener noreferrer">View studio location ↗</a>}
           </div>
         </div>
       </section>

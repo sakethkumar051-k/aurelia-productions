@@ -7,21 +7,21 @@ export const SITE = {
   motto: 'We customize, You celebrate.',
   description:
     'Design-led event management, decor and production house staging weddings, festivals and brand spectacles across India — drawn by hand, executed to the minute.',
-  /** Placeholder contact details — confirm with the client before launch. */
-  email: 'hello@aurevia.in',
-  phone: '+91 90000 00000',
-  phoneHref: '+919000000000',
-  whatsapp: 'https://wa.me/919000000000',
-  instagram: 'https://instagram.com',
+  /** The administrator can add phone, social links and the studio address. */
+  email: 'theaureviaproductions@gmail.com',
+  phone: '',
+  phoneHref: '',
+  whatsapp: '',
+  instagram: '',
   address: {
-    street: 'Aurevia Studio, Baner Road',
-    locality: 'Pune',
-    region: 'Maharashtra',
-    postalCode: '411045',
+    street: '',
+    locality: '',
+    region: '',
+    postalCode: '',
     country: 'IN',
   },
   hours: 'Mon–Sat, 10am–8pm · Site visits by appointment',
-  cities: 'Pune · Mumbai · Pan India',
+  cities: 'Pan India',
   founded: '2017',
 } as const;
 

@@ -87,7 +87,7 @@ export function EnquiryForm({ copy, fallbackPhone }: EnquiryFormProps) {
       setStatus('sent');
     } catch {
       setFormError(
-        `Network trouble on our side. Please try again or WhatsApp ${fallbackPhone}.`,
+        fallbackPhone ? `Network trouble on our side. Please try again or WhatsApp ${fallbackPhone}.` : 'Network trouble on our side. Please try again or email our team.',
       );
       setStatus('error');
     }
