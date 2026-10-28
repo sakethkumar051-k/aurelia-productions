@@ -92,22 +92,25 @@ export async function POST(request: Request) {
   // Archive first — the admin inbox is the record of every enquiry, and it must
   // survive an email provider being down.
   const db = firestore();
-  let stored = false;
+  if (!db) {
+    console.error('[enquiry] Firestore is not configured.');
+    return NextResponse.json(
+      { ok: false, error: 'We could not save your enquiry. Please try again later.' },
+      { status: 503 },
+    );
+  }
 
-  if (db) {
-    try {
-      await db.collection('enquiries').add(enquiry);
-      stored = true;
-    } catch (error) {
-      console.error('[enquiry] Firestore write failed:', error);
-    }
+  try {
+    await db.collection('enquiries').add(enquiry);
+  } catch (error) {
+    console.error('[enquiry] Firestore write failed:', error);
+    return NextResponse.json(
+      { ok: false, error: 'We could not save your enquiry. Please try again later.' },
+      { status: 503 },
+    );
   }
 
   // TODO(email): deliver to the studio inbox once the provider is chosen.
-  // Everything is recorded above, so a delivery failure never loses an enquiry.
-  if (!stored) {
-    console.info('[enquiry]', JSON.stringify(enquiry));
-  }
-
+  // A successful response means the enquiry is already in the admin inbox.
   return NextResponse.json({ ok: true });
 }
