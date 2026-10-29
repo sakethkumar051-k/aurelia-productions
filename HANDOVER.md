@@ -1,14 +1,24 @@
 # Aurevia website handover
 
-Live site: https://aurevia-productions.vercel.app/
+Live site: https://theaureviaproductions.in/
 
-Editor sign-in: https://aurevia-productions.vercel.app/admin/login
+Editor sign-in: https://theaureviaproductions.in/admin/login
 
-Visual editor: https://aurevia-productions.vercel.app/studio (sign-in required)
+Visual editor: https://theaureviaproductions.in/studio (sign-in required)
+
+Fallback site: https://aurevia-productions.vercel.app/ — the same `/admin/login` and `/studio` paths work here during DNS propagation.
 
 Vercel project: https://vercel.com/aurevia-b74b/aurevia-productions — owned by the Aurevia account, `theaureviaproductions@gmail.com`. The existing deployments, Firebase settings and Cloudinary settings were preserved during the transfer.
 
-Custom domain: `theaureviaproductions.in`, with `www` redirecting to the apex domain. GoDaddy registrant verification and the DNS cutover must finish before this address can serve the site. The Vercel address above remains the fallback.
+Custom domain: `theaureviaproductions.in`, with `www` redirecting to the apex domain. The GoDaddy hold cleared on 29 October 2026. The parked DNS record was replaced with Vercel's recommended addresses, and the `www` CNAME now points to Vercel. HTTPS at the new destination returns the website successfully; some DNS resolvers may continue returning the old parking addresses until their cached records expire. The Vercel address above remains available throughout propagation.
+
+## Remaining owner account tasks
+
+- Confirm ownership and recovery access for the existing Cloudinary cloud. Published images work, but completion of the business account claim has not been verified. Recover the existing account instead of creating a second cloud.
+- Connect the owner's GitHub login to Vercel and reconnect the repository for automatic deployments. Manual deployments already work under the Aurevia Vercel account.
+- Rotate the previously exposed Firebase service-account key using the procedure at the end of this document.
+
+These account tasks are separate from the completed Vercel project transfer and custom-domain DNS connection.
 
 The public website can render its original content without external services. Editing requires Firebase Authentication and Firestore; photo uploads also require Cloudinary. These are deployment settings, so source code alone cannot create an editor account or connect the live deployment.
 
@@ -53,12 +63,13 @@ Editors should leave the read-only photo keys and service URL keys alone. Headin
 
 The business email is theaureviaproductions@gmail.com. Phone, WhatsApp, Instagram and studio address are blank until the administrator adds them through **Contact details**. Check the phone link and WhatsApp link as well as the displayed number. A map link appears when an address is supplied. Email delivery for enquiries has not been connected; the Firestore inbox is the durable record.
 
-## Custom domain cutover
+## Domain maintenance
 
-1. Add the exact domain in the Vercel project's **Settings → Domains**. Follow the DNS records Vercel shows for the apex domain and any `www` alias; choose one as primary and redirect the other to it. Do not change DNS blindly—use the values shown for this Vercel project.
-2. When Vercel reports the domain verified and HTTPS active, set the **Production** `NEXT_PUBLIC_SITE_URL` to `https://your-domain.example` (no trailing slash) and redeploy. The canonical links, social metadata and sitemap then use the new domain.
-3. In Firebase Authentication, add the new domain under **Settings → Authorized domains**. Then test editor sign-in at `https://your-domain.example/admin/login`.
-4. Open the public pages, `robots.txt` and `sitemap.xml` on the new domain. Submit and verify a test enquiry, test one admin text save and one photograph upload, and check mobile layout. Keep the Vercel URL working as a fallback.
+The apex and `www` are already attached to the Aurevia Vercel project and authorized in Firebase Authentication. Production canonical links and the sitemap use `https://theaureviaproductions.in`. No new build is needed for the DNS cutover.
+
+GoDaddy remains the registrar and DNS provider. At cutover, the apex A records were `216.198.79.1` and `64.29.17.1`; the `www` CNAME was `bac2bdf9822b245d.vercel-dns-017.com`. For future changes, read the current recommendations from **Vercel → Project → Domains** instead of reusing these values blindly. Preserve the existing nameservers, SOA, `_domainconnect` and `_dmarc` records.
+
+If a device still sees the old parking page or a certificate error during propagation, use the fallback Vercel URL and retry later. Do not bypass certificate warnings. Keep domain renewal and the registrant's verified contact details current.
 
 ## Security and account handoff
 
