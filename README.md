@@ -178,4 +178,4 @@ covers the photography. Nothing here needs a billing account.
 - **Rate limiting** — the enquiry throttle is per-instance and resets on cold start. Fine for one
   server; needs a shared store if the site is ever deployed to several regions.
 - **`NEXT_PUBLIC_SITE_URL`** — set per environment so canonicals, Open Graph and the sitemap
-  point at the real domain (falls back to `https://aurelia-productions.vercel.app`).
+  point at the real domain (falls back to `https://aurevia-productions.vercel.app`).

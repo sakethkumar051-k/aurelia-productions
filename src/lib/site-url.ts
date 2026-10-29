@@ -1,4 +1,4 @@
-const FALLBACK = 'https://aurelia-productions.vercel.app';
+const FALLBACK = 'https://aurevia-productions.vercel.app';
 
 /**
  * Absolute origin for canonical URLs, Open Graph and the sitemap.
